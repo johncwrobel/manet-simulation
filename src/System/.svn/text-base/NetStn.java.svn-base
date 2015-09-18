@@ -1,0 +1,40 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package System;
+
+/**
+ *
+ * @author dsmith
+ */
+public class NetStn {
+    public Station stn;
+    public int state;
+    public int index;
+
+    public static final int START = 0;
+    public static final int WAIT_FOR_PRED = 1;
+    public static final int WAIT_FOR_LAST = 2;
+    public static final int WAIT_FOR_SUCC = 3;
+    public static final int WAIT_FOR_FIRST = 4;
+
+    private String text[] = {
+        "START",
+        "WAIT_FOR_PRED",
+        "WAIT_FOR_LAST",
+        "WAIT_FOR_SUCC",
+        "WAIT_FOR_FIRST"
+    };
+
+    public NetStn(Station st, int index) {
+        stn = st;
+        state = START;
+    }
+
+    @Override
+    public String toString() {
+        return "NetStn " + index + ": " + stn.toString() + "; state: " + text[state];
+    }
+}

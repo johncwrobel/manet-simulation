@@ -1,0 +1,280 @@
+/*
+ * Group.java
+ *
+ * Created on December 31, 2004, 2:44 PM
+ */
+package System;
+
+import java.util.ArrayList;
+
+/**
+ * Class containing an array of station indices
+ * @author  dsmith
+ */
+public class Group {
+    /** array of station indices for this grup */
+    public ArrayList<NetStn> stns;
+        
+    /**
+     * constructor given an array of stations
+     * @param orig the array
+     */
+    public Group() {
+        stns = new ArrayList();
+   }
+    
+    /**
+     * does this object equal that object
+     * @param o - the object
+     * @return true or false
+     */
+    @Override
+    public boolean equals(Object o) {
+        Group g = (Group) o;
+        boolean res = false;
+        
+        if(g.length() == length()) {
+            res = true;
+            for(int i = 0; res && (i < length()); i++ ) {
+                res = g.contains(stns.get(i).stn.ID);
+            }
+        }
+        return res;
+    }
+    
+    /**
+     * create a new group with an element added
+     * @param toAdd the element to add
+     * @return the new Group
+     */
+    public Group bumpIndex(Station st ) {
+        Group res = new Group();
+        for(int i = 0; i < length(); i++) {
+            res.set(i, get(i));
+        }
+        res.set(length(), new NetStn(st, length()));
+        return res;
+   }
+
+    /**
+     * does this object equal that object
+     * @param o - the object
+     * @return true or false
+     */
+    public boolean subsetOf(Group g) {
+        boolean res = true;
+        for(int i = 0; res && (i < length()); i++ ) {
+                res = g.contains(stns.get(i).stn.ID);
+        }
+        return res;
+    }
+    
+   
+    
+   
+    /**
+     * get an indexed data item
+     * @param index the index
+     * @return the data item
+     */
+    public NetStn get(int index) {
+        if (index >= stns.size())
+            throw new RuntimeException("bad");
+        return stns.get(index);
+    }
+    
+    
+    /**
+     * set a data item
+     * @param index the location
+     * @param val the value
+     */
+    public void set(int index, NetStn val) {
+        if(index < length())
+            stns.set(index, val);
+        else
+            stns.add(val);
+    }
+    
+    /**
+     * get the size of the group data
+     * @return the size
+     */
+    public int length() {
+        return stns.size();
+    }
+    
+    /**
+     * show a group recursively
+     * @param txt the header 
+     * @param ID the root index
+     * @param skip the index to skip
+     * @param col the current column
+     * @return a string
+    public String show(String txt, int ID, int skip, int col) {
+        String res =  txt + "[";
+        for(int i = 0; i < length(); i++ ) {
+            NetStn si = get(i);
+            if(si != skip) {
+                if(si >= Model.node.length) {
+                    throw new RuntimeException("si " + si + " out of bounds: " + Model.node.length);
+                }
+                    res += si;
+                    col += 4;
+                if(i < (length()-1)) res += ", ";
+            }
+        }
+        res = res + "]";
+        return res;
+    }
+     */
+    
+    
+    /**
+     * traverse the tree replacing from with to
+     * @param ID the root index
+     * @param from the index to replace
+     * @param to the replacement
+     * @param skip the index to skip
+    public void traverse(int ID, int from, int to, int skip ) {
+        // 
+        Station s = null;
+
+        if(Model.doDbg)
+            Model.debug.print(Model.showIntArray(data) + ".traverse(" + ID + ", " + from + ", " + to + ", " + skip + ")");
+        for(int i = 0; i < length(); i++ ) {
+            int si = data[i];
+            if(si == from) {
+                data[i] = to;
+            }
+        }
+        if(Model.doDbg)
+            Model.debug.println(" -> " + Model.showIntArray(data));
+    }
+     */
+    
+    
+    /**
+     * does this network contain a give index?
+     * @param target the index to find
+     * @return whether it is there
+     */
+    public boolean contains(int target ) {
+        boolean res = false;
+
+        for(int i = 0; !res && (i < length() ); i++ ) {
+            int si = stns.get(i).stn.ID;
+            if(si == target) {
+                res = true;
+            }
+        }
+        return res;
+    }
+    
+    public int nodeDistance( int ia, int ib) {
+        Station A = stns.get(ia).stn;
+        Station B = stns.get(ib).stn;
+        double x = (A.fx - B.fx);
+        double y = (A.fy - B.fy);
+        int res = (int) Math.sqrt(x * x + y * y);
+        if (Model.doDbg) {
+            Model.debug.println("nodeDistance( " + ia + ", " + ib + ") -> " + res);
+        }
+        return res;
+    }
+
+    public int computeDistance() {
+
+        int res = 0;
+        for (int i = 1; i < length(); i++) {
+            res += nodeDistance(i - 1, i);
+        }
+        return res;
+    }
+
+    
+/*
+    private Group replace(int from, int to) {
+        
+        int a[] = new int[data.length];
+        for(int i = 0; i < data.length; i++ ) {
+            if(data[i] == from) a[i] = to;
+                           else a[i] = data[i];
+        }
+        return new Group(a);
+    }
+ * */
+
+    
+    
+    
+    
+    /**
+     * count the nodes in a cluster recursively
+     * @param ID the root index
+     * @param skip the index to skip
+     * @return the number of stations
+    public int count(int ID, int skip) {
+        int res = 0;
+        
+        for(int i = 0; i < length(); i++ ) {
+            int si = data[i];
+            if(si != skip) {
+                Station s = Model.node[si];
+                if(s.active) res++;
+            }
+        }
+        return res;
+    }
+     */
+    
+    private static int al[];
+    private static int ap;
+    
+    /**
+     * traverseRem traverses and removes an index from a network
+     * @param ID the root ID of the group
+     * @param from index to remove
+     * @param skip index to skip in the traversal
+     */
+    public void traverseRem(int ID ) {
+        // traverse the group removing instances of from
+        if(contains(ID)) {
+            int io = 0;
+            ArrayList<NetStn> res = new ArrayList();
+            if(Model.doDbg) {
+                Model.debug.print(toString() + ".traverseRem(" + ID + ")");
+                Model.debug.flush();
+            }
+            for(int i = 0; i < length(); i++ ) {
+                int si = get(i).stn.ID;
+                if(si != ID) {
+                    res.add(get(i));
+               }
+            }
+            stns = res;
+            if(Model.doDbg)
+                Model.debug.println(" -> " + this);
+            }
+    }
+    
+    
+    /**
+     * toString()
+     * @return string describing the object
+     */
+    @Override
+    public String toString() {
+        String res = "[";
+        for (int i = 0; i < length(); i++) {
+            res += stns.get(i).stn.ID;
+            if (i < (length() - 1)) {
+                res += ", ";
+            }
+        }
+        res += "]";
+        return res;
+     }
+     
+
+}

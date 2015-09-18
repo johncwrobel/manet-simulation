@@ -1,0 +1,125 @@
+package System;
+/*
+ * ImageMaker.java
+ *
+ * Created on April 21, 2008, 11:16 AM
+ *
+ * To change this template, choose Tools | Template Manager
+ * and open the template in the editor.
+ */
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+/**
+ *
+ * @author Josiah Hester, September 11, 2007
+ *   http://www.javalobby.org/articles/ultimate-image/
+ */
+public class ImageMaker {
+
+    private final static Color backColor = new Color(188, 230, 176);
+    private final static Color textColor = new Color(200, 240, 176);
+    private final static Color shadow = new Color(173, 215, 161);
+    private final static Color pRed = new Color(220, 170, 165);
+    private final static Color pOrange = new Color(220, 220, 165);
+    private final static Color pYellow = new Color(220, 230, 140);
+    private final static Color pGreen = new Color(140, 230, 140);
+    private final static Color pBlue = new Color(165, 180, 210);
+    private static Font screenFont = new Font("SansSerif", Font.BOLD, 42);
+
+    public static void drawDetails(Graphics g) {
+        int rw = 15;
+        int trw = 2 * rw;
+        g.setColor(backColor);            // Background
+        g.fillRect(0, 0, 1198, 898);
+        if (Model.useCopyright) {
+            g.setColor(shadow);               // Outer Red
+            g.fillOval(151, 0, 820, 820);
+            g.setColor(pRed);
+            g.fillOval(155, 4, 820, 820);
+            g.setColor(shadow);
+            g.fillOval(155 + rw, 4 + rw, 820 - trw, 820 - trw);
+            g.setColor(backColor);
+            g.fillOval(155 + rw, 4 + rw, 816 - trw, 816 - trw);
+            g.setColor(shadow);             // Outer orange
+            g.fillOval(168, 54, 706, 706);
+            g.setColor(pOrange);
+            g.fillOval(172, 58, 706, 706);
+            g.setColor(shadow);
+            g.fillOval(172 + rw, 58 + rw, 706 - trw, 706 - trw);
+            g.setColor(backColor);
+            g.fillOval(172 + rw, 58 + rw, 702 - trw, 702 - trw);
+            g.setColor(shadow);             // Outer Yellow
+            g.fillOval(251, 191, 550, 550);
+            g.setColor(pYellow);
+            g.fillOval(255, 195, 550, 550);
+            g.setColor(shadow);
+            g.fillOval(255 + rw, 195 + rw, 550 - trw, 550 - trw);
+            g.setColor(backColor);
+            g.fillOval(255 + rw, 195 + rw, 546 - trw, 546 - trw);
+            g.setColor(shadow);             // Outer Green
+            g.fillOval(306, 250, 466, 466);
+            g.setColor(pGreen);
+            g.fillOval(310, 254, 466, 466);
+            g.setColor(shadow);
+            g.fillOval(310 + rw, 254 + rw, 466 - trw, 466 - trw);
+            g.setColor(backColor);
+            g.fillOval(310 + rw, 254 + rw, 462 - trw, 462 - trw);
+            g.setColor(shadow);             // Outer Blue
+            g.fillOval(371, 311, 380, 380);
+            g.setColor(pBlue);
+            g.fillOval(375, 315, 380, 380);
+            g.setColor(shadow);
+            g.fillOval(375 + rw, 315 + rw, 380 - trw, 380 - trw);
+            g.setColor(backColor);
+            g.fillOval(375 + rw, 315 + rw, 376 - trw, 376 - trw);
+            g.setColor(shadow);            // Inner Blue
+            g.fillOval(388, 328, 346, 346);
+            g.setColor(pBlue);
+            g.fillOval(392, 332, 346, 346);
+            g.setColor(shadow);
+            g.fillOval(392 + rw, 332 + rw, 346 - trw, 346 - trw);
+            g.setColor(backColor);
+            g.fillOval(392 + rw, 332 + rw, 342 - trw, 342 - trw);
+            g.setColor(shadow);            // Inner Green
+            g.fillOval(406, 366, 248, 248);
+            g.setColor(pGreen);
+            g.fillOval(410, 370, 248, 248);
+            g.setColor(shadow);
+            g.fillOval(410 + rw, 370 + rw, 248 - trw, 248 - trw);
+            g.setColor(backColor);
+            g.fillOval(410 + rw, 370 + rw, 244 - trw, 244 - trw);
+            g.setColor(shadow);           // Inner Yellow
+            g.fillOval(436, 384, 180, 180);
+            g.setColor(pYellow);
+            g.fillOval(440, 388, 180, 180);
+            g.setColor(shadow);
+            g.fillOval(440 + rw, 388 + rw, 180 - trw, 180 - trw);
+            g.setColor(backColor);
+            g.fillOval(440 + rw, 388 + rw, 176 - trw, 176 - trw);
+            g.setColor(shadow);           // Inner Orange
+            g.fillOval(503, 402, 36, 36);
+            g.setColor(pOrange);
+            g.fillOval(507, 406, 36, 36);
+            g.setColor(shadow);
+            g.fillOval(507 + rw, 406 + rw, 36 - trw, 36 - trw);
+            g.setColor(backColor);
+            g.fillOval(507 + rw, 406 + rw, 32 - trw, 32 - trw);
+            g.setColor(shadow);
+            g.setFont(screenFont);
+            g.drawString("(c)Copyright 2005 - 2010 AbidaNet LLC.", 160, 860);
+            g.setColor(textColor);
+            g.drawString("(c)Copyright 2005 - 2010 AbidaNet LLC.", 164, 864);
+        }
+    }
+
+    public static BufferedImage createImage() {
+        BufferedImage img =
+                new BufferedImage(1198, 898, BufferedImage.TYPE_INT_RGB);
+        img.createGraphics();
+        Graphics2D g = (Graphics2D) img.getGraphics();
+        drawDetails(g);
+        return img;
+    }
+}

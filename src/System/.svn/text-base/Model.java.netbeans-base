@@ -1,0 +1,915 @@
+/**
+ * A class providing the storage for the OTSP solution
+ */
+package System;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.event.*;
+import javax.swing.ButtonGroup;
+import java.io.*;
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import java.util.ArrayList;
+
+/**
+ * an essentially static class containing the model
+ */
+public class Model {
+
+    /*
+     * Generic data Storage
+     */
+    /** Title of the main window  **/
+    public static String title = "Network Traffic Flow";
+    /** Labels on the custom buttons **/
+    public static String Labels[] = {"Reset", "Go", " Add", "Radius",
+        "Details", "Read", "Record", "Flow", "Speed"};
+    // typedefs for buttons
+    private static final int RESET = 0;
+    private static final int GO = 1;
+    private static final int ADD = 2;
+    private static final int RADIUS = 3;
+    private static final int DETAILS = 4;
+    private static final int READ = 5;
+    private static final int DATA_ON = 6;
+    private static final int FLOW = 7;
+    private static final int SET_SPEED = 8;
+    /** want to include copyright? */
+    public static boolean useCopyright = true;
+    public static String Buttons[] = {"reverse", "no rev"};
+    public static ButtonGroup butGroup = null;
+    /** screen size */
+    public static Dimension screenSize;
+    /** repainting the screen */
+    public static boolean doRepaint;
+    /** enable the mouse  */
+    public static boolean mouseEnabled = false;
+    /** painting the screen to protect the data while painting */
+    private static boolean painting;
+    /** the host panel */
+    public static MyPanel myPanel;
+    /** diagnostic print stream */
+    public static PrintStream debug;
+    /** diagnostic print stream */
+    public static PrintStream out;
+    /** buffered input stream */
+    public static BufferedReader input = null;
+    /** diagnostic print stream enabler */
+    public static boolean initialized = false;
+    /** display initialized?
+    set by first call to dopaint */
+    public static boolean doDbg = true;
+    /** time tick */
+    public static double DT = 0.03333;
+    public static int t;
+    /**
+     * Model Application specific data storage
+     */
+    /** enable the mouse for network selection */
+    public static boolean detailsEnabled = false;
+    /** output print stream enabler */
+    public static boolean doOut = false;
+    /** output print stream enabler */
+    public static boolean doFlow = false;
+    /** the ratio of leaving to entering a network */
+    private static boolean moveThem;
+    private static Color stnColor[] = null;
+    public static int radius;
+    private static final double MINSPEED = 0.05;
+    private static boolean working = false;
+    private static int timer = 0;
+    private static int INTERVAL = 30;
+    private static int INITIAL_RADIUS = 2000;
+    private static String fileName;
+    /** the array of station nodes */
+    public static Station node[];
+    /** the content of each node network */
+    public static ArrayList<Network> networks;
+    /** the max radius of a node network */
+    public static double activeNetworks;
+    /** the max radius of a node network */
+    public static double radiusSq;
+    /** the max radius to leave a node network */
+    public static double remRadiusSq;
+    /** the max radius to merge a node pair */
+    public static double dRadiusSq;
+    /** the ratio of leave distance to join distance */
+    public static double remFactor = 2.0;
+    /** the edge of the window*/
+    public static final int EDGE = 20;
+    /** the maximum node velocity*/
+    public static final double SPEED = 0.1;
+    /** the maximum node velocity*/
+    public static double MAXV = .2;
+    /** the action list (to serialize access to the data) */
+    public static ArrayList actions = null;
+    /** the trunk location */
+    public static double trunkX = 0;
+    /** the trunk location */
+    public static double trunkY = 0;
+    /** enable path checking */
+    public static boolean checkPath = true;
+    /** enable network linking */
+    public static int networksThreshold;
+    /** file chooser instance */
+    private static JFileChooser chooser;
+    /* ATTS operational mode - 0 = no rev; 1 = rev */
+    public static int ATTSMode = 0;
+    public static double minSpeed, maxSpeed;
+    public static boolean checkDetails = false;
+
+    /**
+     * basic constructor
+     * @param d screen size
+     */
+    public Model(Dimension d) {
+        screenSize = d;
+        initialized = false;
+        chooser = new JFileChooser(new File(".dat"));
+        reset();
+    }
+
+    /**
+     * initialize Global data
+     * System reset called at startup
+     * @param isStandalone - true if running alone, false if an applet that
+     * can't write to files
+     */
+    public static void init(boolean isStandalone) {
+        if (isStandalone) {
+            try {
+                debug = new PrintStream(new FileOutputStream("debug.log"));
+            } catch (IOException e) {
+                System.out.print("Error " + e + " opening debug.log");
+            }
+            debug.println("debug log opened");
+            doDbg = false;   // initial debug setting
+        } else {
+            doDbg = false;
+        }
+
+    }
+
+    /**
+     * Model reset called by the user
+     */
+    private void reset() {
+        DT = 0.0333;
+        doFlow = false;
+        doRepaint = false;
+        checkPath = true;
+        painting = false;
+        moveThem = false;
+        radius = INITIAL_RADIUS;
+        setRadii(radius);
+        networks = new ArrayList();
+        activeNetworks = 0;
+        node = new Station[0];
+        actions = new ArrayList();
+        actions.add(0, new Action(Action.CHECK_MEMBERSHIP, 0));
+        networksThreshold = 15;
+        stnColor = new Color[64];
+        int val = 21;
+        int intensity = 60;
+        stnColor[0] = new Color(0, 0, 190);
+        stnColor[1] = new Color(0, 190, 0);
+        stnColor[2] = new Color(0, 190, 190);
+        stnColor[3] = new Color(190, 0, 190);
+        stnColor[4] = new Color(190, 190, 0);
+
+        for (int i = 5; i < 64; i++) {
+            int rv = (val & 3) * intensity;
+            int gv = ((val & 0xc) >> 2) * intensity;
+            int bv = ((val & 0x30) >> 4) * intensity;
+            stnColor[i] = new Color(rv, gv, bv);
+            int c6 = val & 1;
+            int c1 = (val & 0x20) >> 5;
+            int next = ((c6 + c1) & 1) << 6;
+            val = (val + next) >> 1;
+        }
+        pathState = WAIT;
+        cornerX = 0;
+        cornerY = 0;
+        debug.println("System reset\n");
+    }
+
+    /**
+     * hit here each clock tick
+     */
+    public void timerTick() {
+        t++;
+        if (!painting) {
+            doRepaint = true;
+        }
+        if (butGroup != null) {
+            ATTSMode = 1 - butGroup.getSelection().getMnemonic()
+                    + KeyEvent.VK_0;
+        }
+        if (node.length > 0) {
+            MAXV = 30.0 / (node.length * node.length);
+            if (MAXV < MINSPEED) {
+                MAXV = MINSPEED;
+            }
+            if (moveThem && !painting) {
+                for (int i = 0; i < node.length; i++) {
+                    node[i].update();
+                }
+                if (doFlow) {
+                    if (pathState == WAIT) {
+                        pathState = FIND_ENDS;
+                    }
+                    for (int i = 0; i < networks.size(); i++) {
+                        Network it = (Network) networks.get(i);
+                        it.showFlow(i);
+                    }
+                }
+            }
+            updatePath();
+        }
+        if (!painting && !working && (actions.size() > 0)) {
+            working = true;
+            Action a = (Action) actions.remove(0);
+            if (a != null) {
+                a.execute();
+            }
+            working = false;
+        }
+        if (doOut && (++timer % INTERVAL) == 0) {
+            int id = (int) computeAllDistances();
+            out.println(" " + timer + " " + id + " " + node.length);
+//               writeAllNetworks(out);
+        }
+    }
+
+    /**
+     * respond to custom button press
+     * @param code the number of the button pressed (0 ... (Labels.length-1) )
+     */
+    public void doButton(int code) {
+        String numStr;
+        int repeat = 0;
+        switch (code) {
+            case RESET:  // reset the members
+                reset();
+                numStr = JOptionPane.showInputDialog("Number of Nodes: ");
+                activeNetworks = networksThreshold + 1;
+                if (numStr != null) {
+                    repeat = Integer.parseInt(numStr);
+                } else {
+                    repeat = 1;
+                }
+                actions.add(0, new Action(Action.NEW_COLLECTION, repeat));
+                break;
+            case GO:  // Go
+                moveThem = true;
+                break;
+            case ADD:  // add a node
+                actions.add(0, new Action(Action.NEW_STATION));
+                break;
+            case RADIUS:  // radius
+                String ini = "" + radius;
+                String s = JOptionPane.showInputDialog("Enter radius: ", ini);
+                try {
+                    int wl = Integer.parseInt(s);
+                    radius = wl;
+                    setRadii(radius);
+                } catch (Exception e) {
+                }
+                pathState = WAIT;
+                cornerX = 0;
+                cornerY = 0;
+                for (int i = 0; i < node.length; i++) {
+                    node[i].mark(0);
+                }
+                break;
+            case DETAILS:  // Details Pick
+                detailsEnabled = true;
+                break;
+            case READ: // Read a data file
+                if (chooser.showOpenDialog(myPanel)
+                        == JFileChooser.APPROVE_OPTION) {
+                    File f = chooser.getSelectedFile();
+                    fileName = f.getAbsolutePath();
+                    if (fileName != null) {
+                        try {
+                            input = new BufferedReader(
+                                    new FileReader(fileName));
+                        } catch (Exception e) {
+                            debug.println("File IO exception opening file in doButton");
+                            System.exit(1);
+                        }
+                    }
+                    actions.add(0, new Action(Action.READ_COLLECTION, 0));
+                }
+                break;
+            case DATA_ON:  // Data on
+                if (!doOut) {
+                    doOut = true;
+                    try {
+                        out = new PrintStream(new FileOutputStream("output.dat"));
+                    } catch (IOException e) {
+                        System.out.print("Error " + e + " opening output.dat");
+                    }
+                }
+                break;
+            case FLOW: // Show message flow
+                doFlow = !doFlow;
+                pathState = WAIT;
+                cornerX = 0;
+                cornerY = 0;
+                for (int i = 0; i < node.length; i++) {
+                    node[i].mark(0);
+                }
+                break;
+            case SET_SPEED:
+                String fst = "" + Route.speed;
+                String st = JOptionPane.showInputDialog("Enter Message speed: ", fst);
+                try {
+                    double wl = Double.parseDouble(st);
+                    Route.speed = wl;
+                } catch (Exception e) {
+                }
+                break;
+        }
+    }
+
+    public static void setRadii(int r) {
+        radiusSq = r * r;
+        remRadiusSq = r * remFactor * r * remFactor;
+        dRadiusSq = r * (remFactor - 1)
+                * r * (remFactor - 1) / 8;
+    }
+
+    /**
+     * insert a station
+     * @param st the station
+     */
+    public static void insertStation(Station st) {
+        boolean done = false;
+        int ist = node.length;
+        st.ID = ist;
+
+        node = bumpNodes(node, st);
+        for (int i = 0; i < networks.size(); i++) {
+            Network net = (Network) networks.get(i);
+            if (net.belongs(st, radiusSq)) {
+                done = true;
+                net.insertStation(st);
+            }
+        }
+        if (!done) {
+            Network n = st.findANetwork();
+        }
+    }
+
+    /**
+     * highlight the network closest to [x, y]
+     * @param x x
+     * @param y y
+     */
+    public void highlightNetwork(int x, int y) {
+        if (doDbg) {
+            debug.println("Mouse click at [" + x + "," + y + "]");
+        }
+        Network n = findClosestNet(x, y);
+        n.setDetails(90);
+    }
+
+    private void saveNodes() {
+        PrintStream worstData = null;
+        try {
+            worstData = new PrintStream(new FileOutputStream("worst.dat"));
+        } catch (IOException e) {
+            System.out.print("Error " + e + " opening worst.dat");
+        }
+        worstData.println(node.length);
+        for (int i = 0; i < node.length; i++) {
+            worstData.println(" " + node[i].px + " " + node[i].py);
+        }
+        worstData.close();
+    }
+    private static final int WAIT = 0;
+    private static final int FIND_ENDS = 1;
+    private static final int BEST_ROUTE = 2;
+    public static final int PICK_ROUTE = 3;
+    public static final int WAIT_FOR_ROUTE = 4;
+    public static final int FINISHED_ROUTE = 5;
+    public Station currentStation = null;
+    public Station startStation = null;
+    public Station endStation = null;
+    public static int pathState;
+    public static int cornerX, cornerY;
+    public static int routeFrom = -1;
+    public static int routeTo = -1;
+
+    private void updateCorners() {
+        if (cornerX == 0) {
+            // we are on the left edge
+            if (cornerY == 0) {
+                // we are top left - go to bottom left
+                cornerY = screenSize.height;
+            } else {
+                // we are bottom left - go to bottom right
+                cornerX = screenSize.width;
+            }
+        } else {
+            // we are on the right edge
+            if (cornerY == 0) {
+                // we are top right - go to top left
+                cornerX = 0;
+            } else {
+                // we are bottom right go to top right
+                cornerY = 0;
+            }
+        }
+    }
+
+    private void updatePath() {
+        int closest;
+        int furthest;
+        boolean found;
+        switch (pathState) {
+            case FIND_ENDS:
+                closest = ptDistance(0, cornerX, cornerY);
+                furthest = closest;
+                startStation = node[0];
+                endStation = node[0];
+                for (int i = 1; i < node.length; i++) {
+                    int d = ptDistance(i, cornerX, cornerY);
+                    if (d > furthest) {
+                        furthest = d;
+                        endStation = node[i];
+                    } else if (d < closest) {
+                        closest = d;
+                        startStation = node[i];
+                    }
+                }
+                startStation.mark(1);
+                endStation.mark(3);
+                updateCorners();
+                currentStation = startStation;
+                pathState = BEST_ROUTE;
+                if(checkDetails)
+                    debug.println("Time " + t + " Pick route from " + startStation.ID
+                            + " to " + endStation.ID);
+                break;
+            case BEST_ROUTE:
+                // can we get to the endStation?
+                found = false;
+                for (int i = 0; i < currentStation.myNets.size(); i++) {
+                    Network net = currentStation.myNets.get(i);
+                    if (net.isin(endStation.ID)) {
+                        routeFrom = currentStation.ID;
+                        routeTo = endStation.ID;
+                        found = true;
+                        if(checkDetails)
+                            debug.println("Time " + t + " There is a direct path from " + currentStation.ID
+                                + " to " + endStation.ID);
+                        break;
+                    }
+                }
+                if (!found) {
+                    // A* algorithm - find the node to go to that minimizes
+                    // the length of the route to that node and the crow
+                    // flies distance to the endStation.
+                    int minDist = 100000;
+                    for (int nt = 0; nt < currentStation.myNets.size(); nt++) {
+                        Network net = currentStation.myNets.get(nt);
+                        for (int ist = 0; ist < net.length(); ist++) {
+                            int stnndx = net.members.get(ist).stn.ID;
+                            if (stnndx != currentStation.ID
+                                    && stnndx != routeFrom) {
+                                Station st = node[stnndx];
+                                if (st.myNets.size() > 1) {
+                                    int dist = (int) (st.distanceFrom(currentStation)
+                                            + st.distanceFrom(endStation));
+                                    if (dist < minDist) {
+                                        minDist = dist;
+                                        routeTo = stnndx;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    routeFrom = currentStation.ID;
+                    if(checkDetails)
+                        debug.println("Time " + t + " A* picked route from " + currentStation.ID
+                            + " to " + routeTo);
+                    node[routeTo].mark(2);
+                }
+                pathState = PICK_ROUTE;
+                // route machinery switches to WAIT_FOR_ROUTE when the
+                // route segment starts, then to FINISHED_ROUTE when it ends
+                break;
+            case PICK_ROUTE:
+            case WAIT_FOR_ROUTE:
+                // make sure the route is still feasible
+                found = false;
+                for (int i = 0; i < currentStation.myNets.size(); i++) {
+                    Network net = currentStation.myNets.get(i);
+                    if (net.isin(routeTo)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    // can't reach routeTo any more - go back to BEST_ROUTE
+//                    debug.println("Route not feasible - pick another");
+                    pathState = BEST_ROUTE;
+                    if (node[routeTo] != endStation) {
+                        node[routeTo].mark(0);
+                    }
+                }
+                break;
+            case FINISHED_ROUTE:
+                if (endStation.ID == routeTo) {
+                    startStation.mark(0);
+                    currentStation.mark(0);
+                    endStation.mark(0);
+                    pathState = FIND_ENDS;
+                    if(checkDetails)
+                        debug.println("Time " + t + " Finished route from " + currentStation.ID
+                            + " to " + endStation.ID);
+                } else {
+                    if (currentStation != startStation) {
+                        currentStation.mark(0);
+                    }
+                    currentStation = node[routeTo];
+                    currentStation.mark(2);
+                    pathState = BEST_ROUTE;
+                }
+                break;
+        }
+    }
+
+    /**
+     * generate a station with random location
+     * @return the station
+     */
+    public static Station randomPoint() {
+        int x = (int) (Math.random() * screenSize.width);
+        int y = (int) (Math.random() * (screenSize.height - 100));
+        return new Station(x, y);
+    }
+
+    /**
+     * compute the path lengths of all networks
+     * @return the length
+     */
+    public int computeAllDistances() {
+        int sum = 0;
+        for (int i = 0; i < networks.size(); i++) {
+            Network net = (Network) networks.get(i);
+            sum += net.members.computeDistance();
+        }
+        return sum;
+    }
+
+    private void drawGrid(Graphics g, Dimension d) {
+        int w = d.width;
+        int h = d.height;
+        g.setColor(Color.GRAY);
+        for (int x = 0; x < w; x += 100) {
+            g.drawLine(x, 0, x, h);
+        }
+        for (int y = 0; y < h; y += 100) {
+            g.drawLine(0, y, w, y);
+        }
+    }
+    private static Color[] rCols = new Color[40];
+
+    private Color randomColor(int i) {
+        int index = i % 40;
+        if (rCols[index] == null) {
+            rCols[index] = new Color((int) (255 * Math.random()),
+                    (int) (255 * Math.random()),
+                    (int) (255 * Math.random()));
+        }
+        return rCols[index];
+    }
+
+    private void initializeDisplay(Dimension d) {
+        initialized = true;
+    }
+
+    /**
+     * paint the screen
+     * @param g the graphic environment
+     * @param d the screen size
+     */
+    public void doPaint(Graphics g, Dimension d) {
+        screenSize = d;
+        int bot = screenSize.height - 60;
+        Station st;
+        int lc = stnColor.length - 1;
+
+        painting = true;
+        drawGrid(g, d);
+        if (moveThem && doRepaint && node.length > 0) {
+//            int active = networks.size();
+//            for (int i = 0; i < networks.size(); i++) {
+//                Network n = (Network) networks.get(i);
+//                if (n.length() == 0) {
+//                    active--;
+//                }
+//            }
+//            activeNetworks = active;
+//            double A = d.width * (double) d.height;
+//            int minPath = (int) ((node.length - 1) * Math.sqrt(A / node.length));
+//            double cbest = computeAllDistances();
+//            g.setColor(Color.black);
+//            g.drawString("" + networks.size() + " networks ( " + active + " active)", 20, bot + 45);
+//            g.drawString("Path cost: " + (int) cbest /*+ " (" + minPath + ")"*/, 20, bot + 5);
+            for (int ic = networks.size() - 1; ic >= 0; ic--) {
+                Network net = (Network) networks.get(ic);
+                if (net.details > 0) {
+                    net.drawChain(Color.red, 0, doFlow, g);
+                    net.details--;
+                } else {
+                    net.drawChain(stnColor[ic % lc], 0, doFlow, g);
+                }
+            }
+        }
+        if (node.length > 0) {
+            g.setColor(Color.red);
+            for (int i = 0; i < node.length; i++) {
+                Station stn = node[i];
+                stn.doPaint(g);
+            }
+//            g.setColor(Color.black);
+//            g.drawString("" + node.length + " total nodes", 20, bot + 25);
+        }
+        doRepaint = false;
+        painting = false;
+    }
+
+    /**
+     * Mouse clicked
+     * @param e
+     */
+    public void clicked(MouseEvent e) {
+        System.out.println("Mouse Clicked");
+    }
+
+    /**
+     * Mouse entered
+     * @param e
+     */
+    public void entered(MouseEvent e) {
+        //        System.out.println("Mouse Entered");
+    }
+
+    /**
+     * Mouse exited
+     * @param e
+     */
+    public void exited(MouseEvent e) {
+        //        System.out.println("Mouse Exited");
+    }
+
+    /**
+     * Mouse released
+     * @param e
+     */
+    public void released(MouseEvent e) {
+        System.out.println("Mouse Released");
+        if(detailsEnabled) {
+            highlightNetwork(e.getX(), e.getY() );
+        }
+    }
+
+    /**
+     * Mouse pressed
+     * @param e
+     */
+    public void pressed(MouseEvent e) {
+        System.out.println("Mouse Pressed");
+    }
+
+    /**
+     * Mouse dragged
+     * @param e
+     */
+    public void dragged(MouseEvent e) {
+        System.out.println("Mouse Dragged");
+    }
+
+    /**
+     * Mouse moved
+     * @param e
+     */
+    public void moved(MouseEvent e) {
+        //        System.out.println("Mouse Moved");
+    }
+
+    /**
+     * compute a random delta between two limits
+     * @param inner - the lower ring radius
+     * @param outer - the upper ring radius
+     * @return yes or no
+     */
+    public static int randBand(double inner, double outer) {
+        double d = outer - inner;
+        if (d <= 0) {
+            d = inner / 2;
+        }
+        int shot = (int) ((Math.random() - 0.5) * d / 10.0);
+        if (shot < 0) {
+            shot = -shot;
+        }
+//        shot = 0;            //  DMS 8/28/09
+        return shot;
+    }
+
+    /**
+     * merge network b into network a
+     * @param ia index of a
+     * @param ib index of b
+     */
+    public static void mergeNetworks(int ia, int ib) {
+        Network a = (Network) networks.get(ia);
+        Network b = (Network) networks.get(ib);
+        // add to a all nodes from b not already in a
+        for (int i = 0; i < b.length(); i++) {
+            int id = b.members.get(i).stn.ID;
+            if (!a.isin(id)) {
+                Station s = node[id];
+                if (s.active) {
+                    if (doDbg) {
+                        debug.println("mergeNetworks(" + ia + ", " + ib
+                                + ") adding " + s + " to network " + b);
+                    }
+                    a.insertStation(s);
+                }
+            }
+        }
+        // then nullify b;
+        b.nullify();
+    }
+
+    /**
+     * distance of a node from an x-y location
+     * @param id the node index
+     * @param px x
+     * @param py y
+     * @return distance
+     */
+    public static int ptDistance(int id, int px, int py) {
+        Station s = node[id];
+        double x = s.px - px;
+        double y = s.py - py;
+        return (int) Math.sqrt(x * x + y * y);
+    }
+
+    /**
+     * distance of a node from an x-y location
+     * @param id the node index
+     * @param px x
+     * @param py y
+     * @return distance
+     */
+    public static int ntDistance(int id, int px, int py) {
+        Network n = (Network) networks.get(id);
+        double x = (n.px - px);
+        double y = (n.py - py);
+        int res = (int) Math.sqrt(x * x + y * y);
+        return res;
+    }
+
+    /**
+     * find the node closest to an x-y location
+     * @param x x
+     * @param y y
+     * @return node index
+     */
+    public static int findClosest(int x, int y) {
+        // initialize distance
+        double dist = ptDistance(0, x, y);
+        int res = 0;
+        for (int i = 1; i < node.length; i++) {
+            double d = ptDistance(i, x, y);
+            if (d < dist) {
+                dist = d;
+                res = i;
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * find the network closest to an x-y location
+     * @param x x
+     * @param y y
+     * @return node index
+     */
+    public static Network findClosestNet(int x, int y) {
+        // initialize distance
+        int dist = ntDistance(0, x, y);
+        int res = 0;
+        for (int i = 1; i < networks.size(); i++) {
+            int d = ntDistance(i, x, y);
+            if (d < dist) {
+                dist = d;
+                res = i;
+            }
+        }
+        return (Network) networks.get(res);
+    }
+
+    /**
+     * find the distance between two nodes
+     * @param from one of them
+     * @param to the other
+     * @param showit display the result?
+     * @return the distance
+     */
+    public static int nodeDistance(int from, int to, boolean showit) {
+        int res = 2000000000;
+        if (from < node.length && to < node.length) {
+            double x = (node[from].fx - node[to].fx);
+            double y = (node[from].fy - node[to].fy);
+            res = (int) Math.sqrt(x * x + y * y);
+            if (showit && doDbg) {
+                debug.println("nodeDistance( " + from + ", " + to + ") -> " + res);
+            }
+        }
+        return res;
+    }
+
+
+    /**
+     * print all node distances
+     * @param pl something
+     */
+    public static void printDistances(int pl) {
+        if (pl <= 20) {
+            for (int r = 1; r < pl; r++) {
+                debug.print("\nrow " + r + ":");
+                for (int c = 0; c < r; c++) {
+                    debug.print(" " + nodeDistance(r, c, false));
+                }
+            }
+            debug.println();
+        }
+    }
+
+    /**
+     * make a new station with a node added
+     * @param orig original station
+     * @param toAdd node to add
+     * @return new station
+     */
+    public static Station[] bumpNodes(Station[] orig, Station toAdd) {
+        if (doDbg) {
+            debug.println("bumpNodes: " + toAdd);
+        }
+        Station res[] = new Station[orig.length + 1];
+        for (int i = 0; i < orig.length; i++) {
+            res[i] = orig[i];
+        }
+        res[orig.length] = toAdd;
+        return res;
+    }
+
+    /**
+     * print out all the nodes
+     * @param txt header text
+     */
+    public static void showNodes(String txt) {
+        if (doDbg) {
+            String res = "showNodes " + txt;
+            for (int i = 0; i < node.length; i++) {
+                Station s = node[i];
+                if (s.active) {
+                    res += "\n - " + i + ": " + s;
+                    for (int j = 0; j < networks.size(); j++) {
+                        res += "\n  -- [" + j + "]: ";
+                    }
+                }
+            }
+            debug.println(res);
+        }
+    }
+
+    /**
+     * write out the current configuration
+     * @return the length
+     */
+    private void writeAllNetworks(PrintStream ps) {
+        ps.println("Radius " + radius);
+        for (int i = 0; i < node.length; i++) {
+            ps.println(node[i]);
+        }
+        for (int i = 0; i < networks.size(); i++) {
+            Network net = (Network) networks.get(i);
+            if (net.length() > 0) {
+                ps.println(net);
+            }
+        }
+        doOut = false;
+        out.close();
+    }
+}

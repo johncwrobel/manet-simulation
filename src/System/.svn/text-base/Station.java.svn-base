@@ -1,0 +1,306 @@
+/*
+ * Station.java
+ *
+ * Created on July 6, 2004, 2:50 PM
+ */
+package System;
+
+import java.util.ArrayList;
+import java.awt.Color;
+import java.awt.Graphics;
+
+/**
+ * storage for one station (node)
+ * @author  dsmith
+ */
+public class Station {
+    public boolean active;
+    public boolean mark;
+    /** identity (node index) */
+    public int ID;
+    /** display x location */
+    public int px;
+    /** display y location */
+    public int py;
+    /** physical location */
+    public double fx;
+    /** physical location */
+    public double fy;
+    /** physical x velocity */
+    private double vx;
+    /** physical y velocity */
+    private double vy;
+    /** update mode */
+    private int mode;
+    /** network membership */
+    public ArrayList<Network> myNets;
+    /** physical location */
+    public int marked;
+    public boolean collide;
+
+    /**
+     * default constructor
+     */
+    public Station() {
+        this(0, 0, 0, 0, 0);
+    }
+    
+    /**
+     * Creates a new instance of Station
+     * @param ix x value
+     * @param iy y value
+     */
+    public Station(int ix, int iy) {
+        this(ix, iy, 0, 0, 0);
+    }
+    
+     /**
+     * Creates a new instance of Station
+     * @param ix x value
+     * @param iy y value
+     * @param fvx x velocity
+     * @param fvy y velocity
+     */
+   
+    public Station(int ix, int iy, int mode, double xv, double yv) {
+        this.px = ix;
+        this.py = iy;
+        fx = ix;
+        fy = iy;
+        this.vx = xv;
+        this.vy = yv;
+        this.mode = mode;
+        mark = false;
+        active = true;
+        marked = 0;
+    }
+    
+    
+    /**
+     * copy constructor
+     * @param s station to copy
+     */
+    public Station(Station s) { // clone constructor
+        px = s.px;
+        py = s.py;
+        fx = s.fx;
+        fy = s.fy;
+        vx = s.vx;
+        vy = s.vy;
+        mark = s.mark;
+        mode = s.mode;
+    }
+
+    public void doPaint(Graphics g) {
+        int mk = marked;
+                if (active) {
+//                    if(collide) mk = 4;
+                    if (mk > 0) {
+                        switch (mk) {
+                            case 1:
+                                g.setColor(Color.green);
+                                break;
+                            case 2:
+                                g.setColor(Color.magenta);
+                                break;
+                            case 3:
+                                g.setColor(Color.red);
+                                break;
+                            case 4:
+                                g.setColor(Color.cyan);
+                                break;
+                        }
+                        g.fillOval(px - 8, py - 8, 16, 16);
+                        g.setColor(Color.red);
+                    }
+                    g.fillOval(px - 2, py - 3, 4, 4);
+                }
+    }
+
+    public void mark(int value) {
+        marked = value;
+    }
+    
+    /**
+     * 
+     *  distance from another Station
+     * @param s - the station
+     * @return the distance
+     */
+    public double distanceFrom(Station s) {
+        double x = fx - s.fx;
+        double y = fy - s.fy;
+        return Math.sqrt(x*x + y*y );
+    }
+    
+    
+   /**
+     * 
+     *  distance from a point
+     * @param px x location
+     * @param py y location
+     * @param pz z location
+     * @return distance from this point
+     */
+    public double sqDistanceFrom(double px, double py, double pz) {
+        double x = fx - px;
+        double y = fy - py;
+        return x*x + y*y;
+    }
+    
+    
+    
+    
+    
+    /**
+     * find an empty network for this station
+     * @param ist the station index
+     */
+    public Network findANetwork() {
+        boolean done = false;
+        Network net = null;
+        for(int i = 0; !done && (i < Model.networks.size()); i++ ) {
+             net = (Network) Model.networks.get(i);
+             if(net.length() == 0) {
+                 net.insertStation(this);
+                 done = true;
+             }
+        }
+        if(!done) {
+            int n = Model.networks.size();
+            net = new Network(n);
+            Model.networks.add(net);
+            if(Model.doDbg)
+                Model.debug.println("Created Network " + n);
+            net.insertStation(this);
+        }
+        return net;
+    }
+    
+    
+    /** check all this node's networks */
+    public void checkNetworks() {
+        if(active) {
+            if(Model.doDbg)
+                Model.debug.println(toString() + ".checkNetworks()");
+            for(int n = 0; n < Model.networks.size(); n++) {
+                Network net = (Network) Model.networks.get(n);
+                if(net.isin(ID)) {
+                    if(Model.doDbg)
+                        Model.debug.println("is in " + net);
+                    if(!net.belongs(this, Model.remRadiusSq)) {
+                        net.removeNode( ID );
+                    }
+                } else {
+                    if(Model.doDbg)
+                        Model.debug.println("not in " + net);
+                    if(net.belongs(this, Model.radiusSq)){
+                        net.insertStation(this);
+                    }
+                }
+            }
+            // now look for new network needs:
+            myNets = new ArrayList();
+            for(int nt = 0; nt < Model.networks.size(); nt++) {
+                Network n = Model.networks.get(nt);
+                boolean found = n.isin(ID);
+                if(found) myNets.add(n);
+            }
+            if(myNets.size() == 0) {
+                if(Model.doDbg)
+                    Model.debug.println("not in any");
+                Network n = findANetwork();
+                myNets.add(n);
+            }
+            for(int ist = 0; ist < Model.node.length; ist++) {
+                // for st is each of the other stations
+                if(Model.activeNetworks < Model.networksThreshold) {
+                    Station other = Model.node[ist];
+                    boolean shared = false;
+                    int r = (int) Math.sqrt(Model.radiusSq + Model.randBand(Model.radiusSq, Model.remRadiusSq));
+                    if(other.active && (other.ID != ID) &&(Model.nodeDistance(ID, ist, false) <= r)) {
+                        // if st is within range of this
+                        for(int nt = 0; !shared && (nt < myNets.size()); nt++) {
+                            Network it = (Network) myNets.get(nt);
+                            // this one is in it; is the other?
+                            shared = it.isin(ist);
+                        }
+                        // if this and st do not share any network
+                        if(!shared) {
+                            // find a new network and put this in it
+                            Network n = findANetwork();
+                            Model.activeNetworks++;
+                            // add st to this new station
+                            n.insertStation(other);
+                        }   // create a new network
+                    }       // close enough to try
+                }           // check all the stations
+            }           // OK to link in networks
+        }               // is this station active?
+    }
+    
+    
+    void update() {
+        double dvx = 0;
+        double dvy = 0;
+        if(active) {
+            switch(mode) {
+                case 0:
+                    collide = false;
+                    for(int i = 0; i < Model.node.length; i++) {
+                        Station st = Model.node[i];
+                        if(st.ID != ID) {
+                            int d = Model.nodeDistance(i, ID, false);
+                            if(d < 20) {
+                                dvx = Model.SPEED * (fx - st.fx)/d;
+                                dvy = Model.SPEED * (fy - st.fy)/d;
+                                collide = true;
+                            }
+                        }
+                    }
+                    if(!collide) {
+                        dvx = Model.SPEED * (Math.random() - 0.5);
+                        dvy = Model.SPEED * (Math.random() - 0.5);
+                    }
+                    if( ( px < Model.EDGE ) && (dvx < 0) ) dvx = -dvx;
+                    if( ( py < Model.EDGE ) && (dvy < 0) ) dvy = -dvy;
+                    if( ( px > (Model.screenSize.width - Model.EDGE) ) && (dvx > 0) ) dvx = -dvx;
+                    if( ( py > (Model.screenSize.height - Model.EDGE) ) && (dvy > 0) ) dvy = -dvy;
+                    vx += dvx/10;
+                    vy += dvy/10;
+                    double avx = Math.abs(vx);
+                    if(avx > Model.MAXV) vx = Model.MAXV * avx / vx;
+                    double avy = Math.abs(vy);
+                    if(avy > Model.MAXV) vy = Model.MAXV * avy / vy;
+                    break;
+                case 1:
+                    vx = 0;
+                    vy = 0;
+                    break;
+                case 2:
+                    if( ( px < 0 ) && (vx < 0) ) vx = -vx;
+                    if( ( py < 0 ) && (vy < 0) ) vy = -vy;
+                    if( ( px > Model.screenSize.width) && (vx > 0) ) vx = -vx;
+                    if( ( py > Model.screenSize.height) && (vy > 0) ) vy = -vy;
+                    break;
+            }
+            fx += vx;
+            fy += vy;
+            px = (int) fx;
+            py = (int) fy;
+        }
+    }
+    
+   
+    
+    /**
+     * string representation
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        String res = "Station " + ID + " [" + (int)fx + "," + (int)fy
+                + "]";
+        return res;
+    }
+}

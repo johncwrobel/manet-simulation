@@ -1,0 +1,96 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package System;
+
+import java.awt.Color;
+import java.awt.Graphics;
+/**
+ *
+ * @author dsmith
+ */
+public class Route {
+    public int ID;
+    private int from, to;
+    private Station fromStn, toStn;
+    private myPoint pt = null;
+    private myPoint dp = new myPoint(0,0);
+    public int comingFrom, goingTo;
+    private Network net;
+    private boolean marked;
+    public static double speed = 3;
+
+    public Route(int id, Network net, int fr, int t) {
+            ID = id;
+            this.net = net;
+            comingFrom = fr;
+            goingTo = t;
+            if(fr >= net.length()) fr = net.length()-1;
+            if(t >= net.length()) t = net.length()-1;
+            from = net.members.get(fr).stn.ID;
+            to = net.members.get(t).stn.ID;
+            goingTo = t;
+            fromStn = Model.node[from];
+            toStn = Model.node[to];
+            pt = new myPoint(fromStn.px, fromStn.py);
+            marked = (Model.pathState == Model.PICK_ROUTE)
+                    && (from == Model.routeFrom)
+                    && (to == Model.routeTo);
+            if(marked) {
+                Model.pathState = Model.WAIT_FOR_ROUTE;
+                if(Model.checkDetails)
+                    Model.debug.println("tagged route from " + from +
+                            " to " + to);
+            }
+            if(Model.doDbg) {
+                Model.debug.println("Create " + this
+                        + ";  " + Model.networks.size() + " networks");
+                Model.debug.println("  on " + net);
+            }
+    }
+
+    public boolean update(int index) {
+        if(Model.doDbg) {
+            Model.debug.println("Updated " + this);
+        }
+        double dx = toStn.fx - pt.x;
+        double dy = toStn.fy - pt.y;
+        double toGo = Math.sqrt( dx*dx + dy*dy);
+        boolean res = true;
+        if(toGo < speed) {
+            res = false;
+            if(marked) {
+                marked = false;
+                Model.pathState = Model.FINISHED_ROUTE;
+            }
+            if(Model.doDbg) {
+                Model.debug.println("Finished " + this);
+                Model.debug.println("  on " + net);
+            }
+        } else {
+            dp.x = speed * dx/toGo;
+            dp.y = speed * dy/toGo;
+            pt.add(dp);
+        }
+        return res;
+    }
+
+    public void draw(Graphics g, Color c) {
+        if(marked) {
+            g.setColor(Color.red);
+            g.fillOval((int) pt.x-6, (int) pt.y-6, 12, 12);
+            g.setColor(c);
+        }
+        g.fillOval((int) pt.x-3, (int) pt.y-3, 6, 6);
+    }
+
+    @Override
+    public String toString() {
+        String res = "Route " + ID + " from " + from + " to " + to
+                + " comingFrom " + comingFrom + "; goingTo " + goingTo
+                + " at [" + (int) pt.x + ", " + (int) pt.y + "] ";
+        return res;
+    }
+}

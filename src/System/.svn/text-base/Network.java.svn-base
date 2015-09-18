@@ -1,0 +1,648 @@
+/*
+ * Network.java
+ *
+ * Created on December 27, 2005, 11:08 PM
+ *
+ * To change this template, choose Tools | Options and locate the template under
+ * the Source Creation and Management node. Right-click the template and choose
+ * Open. You can then make changes to the template in the Source Editor.
+ */
+package System;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.LinkedList;
+
+/**
+ * container for once complete cluster
+ * @author dsmith
+ */
+public class Network {
+
+    /** the cluster identity */
+    public int ID;
+    /** the cluster centroid */
+    public double cx;
+    /** the cluster centroid */
+    public double cy;
+    /** the cluster display location */
+    public int px;
+    /** the cluster display location */
+    public int py;
+    /** int array of the path indices */
+    public Group members;
+    /** mode of operation of path checking <br>
+    0 - set up the iteration <br>
+    1 - perform one check <br>
+    2 - set up the repair <br>
+    3 - repair iteration<br>  */
+    public int mode = 0;
+    private int fromNode = 0;
+    private int toNode = 0;
+    /** details */
+    public int details;
+    private int closestD = 0;
+    private int bestFr;
+    private int bestTo;
+    private NetStn saveBestNode;
+    private boolean better;
+    private boolean flowing;
+    private LinkedList<Route> routes;
+    public static int IDs = 0;
+    private int source;
+    private int sendSecond;
+    private int comingFrom, goingTo;
+
+    /**
+     * Creates a new instance of Network
+     * @param id its identity
+     */
+    public Network(int id) {
+        ID = id;
+        nullify();
+        if (id == 0) {
+            Model.actions.add(new Action(Action.OPTIMIZE_PATHS));
+        }
+        if (id == 1) {
+            Model.actions.add(new Action(Action.CHECK_DUPLICATES, 1));
+        }
+        details = 0;
+        mode = 0;
+        flowing = false;
+        resetPathProcessing();
+    }
+
+    public void showFlow(int index) {
+
+        if(length() > 0) {
+            if(Model.checkDetails) {
+                for(int i = 0; i < length(); i++) {
+                    Model.debug.println(members.get(i));
+                }
+                if(members.get(length()-1).state == NetStn.WAIT_FOR_LAST) {
+                    Model.debug.println("Time " + Model.t
+                            + "Houston, we have a problem!");
+                    throw new RuntimeException("Bad last station state");
+                }
+                if(members.get(0).state == NetStn.WAIT_FOR_FIRST) {
+                    Model.debug.println("Time " + Model.t
+                            + "Houston, we have a problem!");
+                    throw new RuntimeException("Bad first station state");
+                }
+            }
+        }
+        if (length() > 1 &&(!flowing || routes.size() == 0) ) {
+            flowing = true;
+            sendSecond = 0;
+            source = 0;
+            routes = new LinkedList();
+            for (int i = 1; i < length(); i++) {
+                Route rt = new Route(IDs++, this, source, i);
+                routes.add(rt);
+                if(Model.checkDetails)
+                    Model.debug.println("Time " + Model.t + " Added " + rt);
+            }
+            comingFrom = source;
+            goingTo = (source + 1) % length();
+        }
+        if(sendSecond > 0) {
+            sendSecond--;
+            if(sendSecond == 0) {
+                if(Model.checkDetails)
+                    Model.debug.println("Time " + Model.t + " Send second (" + ID + ") from " + source);
+                for (int j = 0; j < length(); j++) {
+                    if (j != source) {
+                        Route rt = new Route(IDs++, this, source, j);
+                        routes.add(rt);
+                        if(Model.checkDetails)
+                             Model.debug.println("Time " + Model.t + " Added " + rt);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < routes.size(); i++) {
+            Route theRoute = routes.get(i);
+            if (!(theRoute.update(index))) {
+                // theRoute just finished
+                routes.remove(theRoute);
+                if(Model.checkDetails)
+                    Model.debug.println("Time " + Model.t + " Finished " + theRoute);
+                if (Model.ATTSMode == 0) {   // without reversing
+                    if (theRoute.goingTo == goingTo && theRoute.comingFrom == comingFrom) {
+                        source = goingTo;
+//                        Model.debug.println("Not rev: triggered new broadcast from " + source);
+                        for (int j = 0; j < length(); j++) {
+                            if (j != source) {
+                                Route rt = new Route(IDs++, this, source, j);
+                                routes.add(rt);
+//                                Model.debug.println("Added " + rt);
+                            }
+                        }
+                        if (length() > 0) {
+                            comingFrom = source;
+                            goingTo = (source + 1) % length();
+//                            Model.debug.println("update comingFrom to " + comingFrom
+//                                    + " and goingTo to " + goingTo);
+                        }
+                    }
+                } else {  // with reversing
+          /*
+           * The state machine cycle is:
+           *        START:  station 0 transmits -> WAIT_FOR_LAST
+           *        WAIT_FOR_PRED:  sendIt; last stn -> send second
+                                                        WAIT_FOR_FIRST
+           *                                else -> WAIT_FOR_LAST
+           *        WAIT_FOR_LAST:  -> WAIT_FOR_SUCC
+           *        WAIT_FOR_SUCC:  sendIt; first stn -> send second
+                                                        WAIT_FOR_LAST
+           *                                else -> WAIT_FOR_FIRST
+           *        WAIT_FOR_FIRST:  -> WAIT_FOR_PRED
+           */
+                    boolean sendIt = false;
+                    NetStn receiver = members.get(theRoute.goingTo);
+                    if(Model.checkDetails)
+                        Model.debug.println("Time " + Model.t + " Received rt " + theRoute.ID
+                                + " at " + receiver);
+                    switch(receiver.state) {
+                        case NetStn.WAIT_FOR_FIRST:
+                            if(theRoute.comingFrom == 0) {
+                                receiver.state = NetStn.WAIT_FOR_PRED;
+                            }
+                            break;
+                        case NetStn.WAIT_FOR_LAST:
+                            if(theRoute.comingFrom == length()-1) {
+                                receiver.state = NetStn.WAIT_FOR_SUCC;
+                            }
+                            break;
+                        case NetStn.WAIT_FOR_PRED:
+                            if(theRoute.comingFrom == receiver.index-1) {
+                                sendIt = true;
+                                source = receiver.index;
+                                if(receiver.index == length()-1) { // last stn
+                                     receiver.state = NetStn.WAIT_FOR_FIRST;
+                                     sendSecond = 3;
+                                } else {
+                                     receiver.state = NetStn.WAIT_FOR_LAST;
+                                }
+                            }
+                            break;
+                        case NetStn.WAIT_FOR_SUCC:
+                            if(theRoute.comingFrom == receiver.index+1) {
+                                sendIt = true;
+                                source = receiver.index;
+                                if(receiver.index == 0) { // first stn
+                                     receiver.state = NetStn.WAIT_FOR_LAST;
+                                     sendSecond = 3;
+                                } else {
+                                     receiver.state = NetStn.WAIT_FOR_FIRST;
+                                }
+                            }
+                            break;
+                    }
+                    if(sendIt) {
+                        if(Model.checkDetails)
+                            Model.debug.println("Time " + Model.t + " Reverse: triggered new broadcast from " + source);
+                        for (int j = 0; j < length(); j++) {
+                            if (j != source) {
+                                Route rt = new Route(IDs++, this, source, j);
+                                routes.add(rt);
+                                if(Model.checkDetails)
+                                    Model.debug.println("Time " + Model.t + " Added " + rt);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * zero out data contents
+     */
+    public void nullify() {
+        cx = -10000;
+        cy = -10000;
+        px = -10000;
+        py = -10000;
+        members = new Group();
+        mode = 0;
+        flowing = false;
+        resetPathProcessing();
+    }
+
+    /**
+     * prevent network changes from trashing the network analysis
+     */
+    public void resetPathProcessing() {
+        routes = new LinkedList();
+        if(length() > 0) {
+            NetStn it = members.get(0);
+            it.state = NetStn.WAIT_FOR_LAST;  // when flow starts,
+                                              // first stn sends
+            it.index = 0;
+            for(int i = 1; i < length(); i++) {
+                it = members.get(i);
+                it.state = NetStn.WAIT_FOR_PRED;
+                it.index = i;
+            }
+        }
+    }
+
+    /**
+     * show system data
+     */
+    private void showData(String st) {
+        if (Model.doDbg) {
+            Model.debug.println("showData(" + st + ")\n[" + ID 
+                    + "] (" + Model.node.length + ")   members: " + members
+                    + " -> " + members.computeDistance());
+        }
+        Model.showNodes(st);
+    }
+
+    public int length() {
+        return members.length();
+    }
+
+    /**
+     * insert a station
+     * @param st the station
+     * @param index the ID of the station
+     */
+    public void insertStation(Station st) {
+
+//        int index = st.ID;
+        Station cluster[] = new Station[3];
+        int startAt;
+        Station omit;
+//         Model.doDbg = true;
+        if (Model.doDbg) {
+            Model.debug.println(toString() + ".insertStation( " + st + ")");
+        }
+        /*
+        Design Notes for FOBOTS Version 8.5
+
+        These notes are to document the FPGA algorithm that implements the appropriate
+        parts of the system requirements document version IR dated 4/1/2005.  As the
+        requirements are updated, the appropriate changes ought to be noted in these
+        notes.
+
+        We are given the 2 closest stations A and B to the new station C. A is closer than B to C
+        We also know the positions of A and B on the map
+
+        We also have the distances AB, AC and BC.  We eliminate the longest distance, leaving
+        us three possible arrangements, ABC, ACB or BAC
+
+        We also don't know the path members to take them: ABC / CBA, ACB / BCA or BAC / CAB
+
+        So we decide on a station members - ABC or CBA, two of which are on the map, one isn't
+        We can choose between these orders based on the members of the indices on the map.
+        Whichever of the known station positions is lower should come first.
+
+        Then, we just find the first, paste in the triad and remove the first and second
+         */
+        if (Model.doDbg) {
+            Model.debug.println("current members " + members);
+            Model.debug.flush();
+        }
+        Group newMembers = members.bumpIndex(st);
+        if (Model.doDbg) {
+            Model.debug.println("new path " + newMembers);
+            Model.debug.flush();
+        }
+        int bestIndex = 0;
+        int nextIndex = 1;
+
+        if (length() >= 2) {
+            int bestDist = (int) st.distanceFrom(members.get(0).stn);
+            int nextDist = (int) st.distanceFrom(members.get(1).stn);
+            if (bestDist > nextDist) {
+                int temp = bestDist;
+                bestDist = nextDist;
+                nextDist = temp;
+                bestIndex = 1;
+                nextIndex = 0;
+            }
+            if (Model.doDbg) {
+                Model.debug.println("closest is [" + bestIndex + ", " + bestDist
+                        + "]; next closest is [" + nextIndex + ", " + nextDist + "]");
+                Model.debug.flush();
+            }
+            for (int i = 2; i < length(); i++) {
+                int thisD = (int) st.distanceFrom(members.get(i).stn);
+                if (thisD < bestDist) {
+                    nextDist = bestDist;
+                    nextIndex = bestIndex;
+                    bestDist = thisD;
+                    bestIndex = i;
+                    if (Model.doDbg) {
+                        Model.debug.println("replaced best with ["
+                                + bestIndex + ", " + bestDist + "]");
+                        Model.debug.flush();
+                    }
+                } else if (thisD < nextDist) {
+                    nextDist = thisD;
+                    nextIndex = i;
+                    if (Model.doDbg) {
+                        Model.debug.println("replaced next with ["
+                                + nextIndex + ", " + nextDist + "]");
+                        Model.debug.flush();
+                    }
+                }
+            }
+            if (Model.doDbg) {
+                Model.debug.println("closest is [" + bestIndex + ", " + bestDist
+                        + "; next closest is [" + nextIndex + ", " + nextDist + "]");
+                Model.debug.flush();
+            }
+            int theirDist = (int) members.get(bestIndex).stn.distanceFrom(
+                                               members.get(nextIndex).stn);
+            // closest A is in stn[0]
+            // next closest B is in stn[1]
+            // C is the new guy
+            if (theirDist < nextDist) {  // AB < BC
+                if (bestIndex < nextIndex) {   // use CAB
+                    cluster[0] = st;
+                    cluster[1] = members.get(bestIndex).stn;
+                    cluster[2] = members.get(nextIndex).stn;
+                    startAt = bestIndex;
+                    omit = members.get(nextIndex).stn;
+                } else {                     // use BAC
+                    cluster[2] = st;
+                    cluster[1] = members.get(bestIndex).stn;
+                    cluster[0] = members.get(nextIndex).stn;
+                    startAt = nextIndex;
+                    omit = members.get(bestIndex).stn;
+                }
+            } else {               // AB >= BC
+                if (bestIndex < nextIndex) {   // use ACB
+                    cluster[1] = st;
+                    cluster[0] = members.get(bestIndex).stn;
+                    cluster[2] = members.get(nextIndex).stn;
+                    startAt = bestIndex;
+                    omit = members.get(nextIndex).stn;
+                } else {                     // use BCA
+                    cluster[1] = st;
+                    cluster[2] = members.get(bestIndex).stn;
+                    cluster[0] = members.get(nextIndex).stn;
+                    startAt = nextIndex;
+                    omit = members.get(bestIndex).stn;
+                }
+            }
+            int i;
+            for (i = 0; i < 3; i++) {
+                newMembers.set(i + startAt, 
+                        new NetStn(cluster[i], i + startAt));
+            }
+            i = startAt++ + 3;
+            while (startAt < length()) {
+                if (members.get(startAt).stn.ID != omit.ID) {
+                    newMembers.set(i++, members.get(startAt));
+                }
+                startAt++;
+            }
+        }
+        members = newMembers;
+        showData("in insertStation after adding");
+        centroid();
+        resetPathProcessing();
+    }
+
+
+    /**
+     * does a station belong in this network?
+     * @param st the station
+     * @param radiusSq the max permitted distance squared to avoid a lot of square roots
+     * @return the answer
+     */
+    public boolean belongs(Station st, double radiusSq) {
+
+        if (length() == 0) {
+            return false;
+        }
+        boolean allin = true;
+        for (int i = 0; allin && (i < length()); i++) {
+            int dist = (int) st.distanceFrom(members.get(i).stn);
+            allin = dist < Math.sqrt(radiusSq + Model.randBand(Model.radiusSq, radiusSq));
+        }
+//         if(Model.doDbg) Model.debug.println("does " + st + " belong in " + this + " at distance " + limit + "? " + allin);
+        return allin;
+    }
+
+    /**
+     * remove an index from this cluster
+     * @param cl the index
+     * @param rt the root index
+     */
+    public void removeNode(int ID) {
+        if (Model.doDbg) {
+            Model.debug.println(toString() + ".removeNode( " + ID + ")");
+        }
+        members.traverseRem(ID);
+        resetPathProcessing();
+    }
+
+    /**
+     * 
+     * @param n the details
+     */
+    public void setDetails(int n) {
+        details = n;
+    }
+
+    /** check the path path to shorten it where able */
+    public void checkBestPath() {
+
+        centroid();
+        if (Model.checkPath && !Model.doFlow && (length() > 4)) {
+            switch (mode) {
+                case 0:            // 0 - set up iterations
+                    fromNode = 0;
+                case 3:            // 3 - resume iterations
+                    if (fromNode < (length() - 1)) {
+                        int nx = members.get(fromNode).stn.ID;
+                        if (nx < Model.node.length) {
+                            Model.node[members.get(fromNode).stn.ID].mark = true;
+                            toNode = fromNode + 2;
+                            closestD = Model.nodeDistance(members.get(fromNode).stn.ID,
+                                    members.get(fromNode+1).stn.ID, false);
+                            better = false;
+                            mode = 1;
+                        } else {
+                            mode = 0;
+                        }
+                    } else {
+                        mode = 0;
+                    }
+                    break;
+                case 1:            // 1 - check for closest
+                    for (int i = 0; (i < 100) && (toNode < length()); i++) {
+                        int d = Model.nodeDistance(members.get(fromNode).stn.ID,
+                                members.get(toNode).stn.ID, false);
+                        if (d < closestD) {
+                            closestD = d;
+                            bestFr = fromNode;
+                            bestTo = toNode;
+                            better = true;
+                        }
+                        toNode++;
+                    }
+                    if (toNode >= length()) {
+                        if (fromNode < length()) {
+                            Model.node[members.get(fromNode).stn.ID].mark = false;
+                        }
+                        fromNode++;
+                        if (better) {
+                            mode++;
+                        } else if (fromNode >= length() - 2) {
+                            mode = 0;
+                        } else {
+                            toNode = fromNode + 2;
+                            Model.node[members.get(fromNode).stn.ID].mark = true;
+                            closestD = Model.nodeDistance(members.get(fromNode).stn.ID,
+                                    members.get(fromNode+1).stn.ID, false);
+                            better = false;
+                        }
+                    }
+                    break;
+                case 2:            // 2 - set up the iteration
+                    /* we need to copy forward the nodes from bestFr + 1
+                     * to bestTo - 1
+                     * and then put the node at bestTo in bestFr + 1 */
+                    if (fromNode < length()) {
+                        Model.node[members.get(fromNode).stn.ID].mark = false;
+                    }
+                    if (bestTo < length()) {
+                        saveBestNode = members.get(bestTo);
+                        for (int i = bestTo; i > bestFr + 1; i--) {
+                            NetStn it = members.get(i - 1);
+                            it.index = i;
+                            members.set(i,it);
+                        }
+                        saveBestNode.index = bestFr + 1;
+                        members.set(bestFr + 1, saveBestNode);
+                        fromNode = bestFr + 1;
+                        if (fromNode < (length() - 2)) {
+                            mode = 3;
+                        } else {
+                            mode = 0;
+                        }
+                    } else {
+                        mode = 0;
+                    }
+                    break;
+
+            }
+        }
+    }
+
+    /**
+     * recompute the centroid
+     */
+    private void centroid() {
+        double ix = 0;
+        double iy = 0;
+        double x = 0;
+        double y = 0;
+        int n = length();
+
+        for (int i = 0; i < n; i++) {
+            if(i < length());
+            Station s = members.get(i).stn;
+            if (s.active) {
+                ix += s.px;
+                iy += s.py;
+                x += s.fx;
+                y += s.fy;
+            }
+        }
+
+        if (length() > 0) {
+            n = length();
+            cx = x / n;
+            cy = y / n;
+            px = (int) ix / n;
+            py = (int) iy / n;
+        }
+    }
+
+    /**
+     * swap two items in the best path
+     * @param i item 1
+     * @param j item 2
+    public void swap(int i, int j) {
+        if (Model.doDbg) {
+            Model.printDistances(length());
+            Model.debug.println("swap( " + i + ", " + j + ") from " + members
+                    + " = " + members.computeDistance());
+        }
+        NetStn temp = members.get(j);
+        members.set(j, members.get(i));
+        members.set(i, temp);
+        if (Model.doDbg) {
+            Model.debug.println("              to " + members
+                    + " = " + members.computeDistance());
+        }
+    }
+     */
+
+    static int radius = 6;
+    static int dia = 12;
+
+    /**
+     * draw the chain connecting this network
+     * @param c the color
+     * @param off the offset
+     * @param g the graphic environment
+     */
+    public void drawChain(Color c, int off, boolean isFlow, Graphics g) {
+
+        if (length() > 0) {
+            g.setColor(c);
+            g.fillOval(px - radius, py - radius, dia, dia);
+            Station st = members.get(0).stn;
+            for (int i = 1; i < length(); i++) {
+                int ist = members.get(i).stn.ID;
+                if (ist < 0 || ist >= Model.node.length) {
+                    Model.debug.println("index " + ist + " is off the node list");
+                }
+                Station tmp = members.get(i).stn;
+                if (st.active) {
+                    g.drawLine(st.px + off, st.py + off, tmp.px + off, tmp.py + off);
+                }
+                st = tmp;
+            }
+            if (isFlow && flowing) {
+                for (int i = 0; i < routes.size(); i++) {
+                    routes.get(i).draw(g, c);
+                }
+            }
+            g.setColor(Color.black);
+            String str = Integer.toString(ID);
+            g.drawString(str, px + 5, py - 5);
+        }
+    }
+    /**
+     * determine if a value is in an int array
+     * @param v the value
+     * @param va the array
+     * @return yes or no
+     */
+    public boolean isin(int v) {
+        boolean found = false;
+        for (int i = 0; (i < members.length() && !found); i++) {
+            found = (members.contains(v));
+        }
+        return found;
+    }
+
+    /**
+     * string representation
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        String res = "Network " + ID + " " + members;
+        return res;
+    }
+}

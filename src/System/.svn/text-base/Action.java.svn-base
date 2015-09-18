@@ -1,0 +1,303 @@
+/*
+ * Action.java
+ *
+ * Created on December 30, 2005, 3:16 PM
+ *
+ * To change this template, choose Tools | Options and locate the template under
+ * the Source Creation and Management node. Right-click the template and choose
+ * Open. You can then make changes to the template in the Source Editor.
+ */
+
+package System;
+
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.io.IOException;
+
+/**
+ * Class encapsulating an action - needed to linearize access the the4 data structures
+ * so that multiple threads don't collide in the middle of them
+ * @author dsmith
+ */
+public class Action {
+    /**
+     * action <br>
+     * type   definition / p1 meaning / p2 meaning <br>   
+                0     restart / number of nodes <br>
+                1     new station<br>
+                2,3   delete / station index <br>
+                4     check membership / station index <br>
+                5     check path / network index <br>
+                6     check network pair / first / second /*/
+    public int type;  
+    /** action parameter 1 (see type for meaning)*/
+    public int p1;
+    /** action parameter 2 (see type for meaning)*/
+    public int p2;
+    private int al1, al2;
+    private int lastFound;
+    
+    private static final int atOnce = 5;
+        public static final int NEW_COLLECTION = 0;
+        public static final int NEW_STATION = 1;
+        public static final int CHECK_MEMBERSHIP = 4;
+        public static final int OPTIMIZE_PATHS = 5;
+        public static final int CHECK_DUPLICATES = 6;
+        public static final int READ_COLLECTION = 7;
+
+    /**
+     * Constructor with no parameters
+     * @param t the action type
+     */
+    public Action(int t) {
+        this(t, 0, 0);
+    }
+    
+    
+    
+    /**
+     * Creates a new instance of Action with one parameter
+     * @param t the action type
+     * @param pt1 the parameter
+     */
+    public Action(int t, int pt1 ) {
+        this(t, pt1, 0);
+    }
+
+    
+    /**
+     * Creates a new instance of Action with two parameters
+     * @param t the action type
+     * @param pt1 one parameter
+     * @param pt2 the other parameter
+     */
+    public Action(int t, int pt1, int pt2 ) {
+        type = t;
+        p1 = pt1;
+        p2 = pt2;
+    }
+    
+    
+    private int getLength(int n) {
+        Network an = (Network) Model.networks.get(n);
+        return an.length();
+    }
+    
+    /**
+     *  Find a pair of networks that are populated
+     *  whose centroids are within radiusSq of each other
+     */
+    private boolean getLengths(int ndx) {
+        boolean found = false;
+        int stop = ndx - 1;
+        int n = Model.networks.size();
+        int max = n*(n-1);
+        while(!found && ndx != stop) {
+            p1 = ndx / n;
+            p2 = ndx % n;
+            if(p1 < p2) {
+                Network n1 = (Network) Model.networks.get(p1);
+                Network n2 = (Network) Model.networks.get(p2);
+                al1 = n1.length();
+                al2 = n2.length();
+                found = (al1 > 0) && (al2 > 0);
+                if(found) {
+                    double dx = Math.abs(n1.cx - n2.cx);
+                    double dy = Math.abs(n1.cy - n2.cy);
+                    found = (dx + dy) < 200;
+                }
+            }
+            if(!found) {
+                ndx++;
+                if(ndx >= max) {
+                    ndx = 0;
+                }
+            }
+        }
+        lastFound = ndx;
+        return found;
+    }
+    
+    /**
+     * execute the given action
+     */
+    public void execute() {
+        switch(type) {
+            case NEW_COLLECTION:  // new collection
+//                if(Model.doDbg) Model.doDbg = false;
+                Model.doRepaint = true;
+                Model.node = new Station[0];
+                Model.networks = new ArrayList();
+                 for(int i = 0; i < p1 ; i++ ) {
+                    Model.insertStation(Model.randomPoint());
+                }
+                Model.myPanel.repaint();
+                break;
+            case NEW_STATION: // new station
+                Model.insertStation(Model.randomPoint());
+                break;
+            case CHECK_MEMBERSHIP: // check a station's network membership
+                int from = p1;
+                if(from >= Model.node.length) from = 0;
+                int past = from + atOnce;
+//                Model.debug.println("process stations from " + from + " to " + past);
+                if(past > Model.node.length) past = Model.node.length;
+                for(int ip = from; ip < past; ip++ ) {
+                    Station s = Model.node[ip];
+                    if(s.active) s.checkNetworks();
+                }
+                Model.actions.add(new Action(CHECK_MEMBERSHIP, past));
+                break;
+            case OPTIMIZE_PATHS: // optimize network paths
+                for(int in = 0; in < Model.networks.size(); in++ ) {
+                    Network rt = (Network) Model.networks.get(in);
+                    if(rt.length() > 0) {
+                        rt.checkBestPath();
+                    }
+                }
+                Model.actions.add(new Action(OPTIMIZE_PATHS));
+                break;
+            case CHECK_DUPLICATES: // check for duplicate networks
+                // find pair of networks
+//                for(int i = 0; i < Model.networks.size(); i++) {
+//                    Network n = (Network) Model.networks.get(i);
+//                    Model.debug.print("" + n.path.data.length + "; ");
+//                }
+//                Model.debug.print("p1 = " + p1);
+                boolean found = getLengths(p1);
+//                Model.debug.println("; p1 = " + p1 + "; p2 = " + p2 + "; found = " + found + "; lastFound = " + lastFound);
+                Model.actions.add(new Action(CHECK_DUPLICATES, lastFound + 1));
+                if(found) {
+                    if((p1 < Model.networks.size()) && (p2 < Model.networks.size())) {
+                        Network an = (Network) Model.networks.get(p1);
+                        if(Model.doDbg)
+                            Model.debug.println( "first, in = " + p1 + "; has anl " + al1 );
+                        if(al1 > 0) {
+                            Network bn = (Network) Model.networks.get(p2);
+                            if(Model.doDbg)
+                                Model.debug.println( " -- try jn = " + p2 + "; has bnl " + al2);
+                            if( (al2 > 0) && (p2 != p1) ) {
+                                if(an.members.subsetOf(bn.members)) {
+                                       if(Model.doDbg)
+                                           Model.debug.println("Net " + p1 + " is subset of net " + p2);
+                                       an.nullify();
+                                } else {
+                                    double dx = an.cx - bn.cx;
+                                    double dy = an.cy - bn.cy;
+                                    double d = dx*dx + dy*dy /*+ dz*dz*/; 
+                                    if(Model.doDbg)
+                                        Model.debug.println(" -- " + d + " <> " + Model.dRadiusSq );
+                                    if(d < Model.dRadiusSq) {
+                                        Model.mergeNetworks(p1, p2);
+                                    }  // networks too close
+                                }  // not a direct subset
+                            }  // b has some stations
+                        } // a has some stations
+//                        if(Model.doDbg) Model.debug.println();
+//                        Model.doDbg = false;
+                    }  // only execute if more than one network
+                }
+                break;
+            case READ_COLLECTION:  // read a collection
+//                if(Model.doDbg) Model.doDbg = false;
+                Model.doRepaint = true;
+                Model.node = new Station[0];
+                String line;
+                int count = 0;
+                int x = 0;
+                int y = 0;
+                double xv = 0;
+                double yv = 0;
+                int mode = 0;
+                boolean usePound = false;
+                try {
+                    line = Model.input.readLine();
+                    usePound = line != null && line.charAt(0) == '#';
+                } catch(IOException e) {
+                    Model.debug.println("File IO exception in Action.execute(7)");
+                    System.exit(1);
+                }
+                if(usePound) try {
+                        while((line = Model.input.readLine()) != null) {
+                            if(line.charAt(0) != '#') {
+                                StringTokenizer tokenizer = new StringTokenizer(line);
+                                int i = 0;
+                                while(tokenizer.hasMoreTokens()) {
+                                        String token = tokenizer.nextToken();
+                                        switch(i) {
+                                            case 0:
+                                                x = Integer.parseInt(token);
+                                                break;
+                                            case 1:
+                                                y = Integer.parseInt(token);
+                                                break;
+                                            case 2:
+                                                mode = Integer.parseInt(token);
+                                                break;
+                                            case 3:
+                                                xv = Double.parseDouble(token);
+                                                break;
+                                            case 4:
+                                                yv = Double.parseDouble(token);
+                                        }
+                                        i++;
+                                }
+                                Model.insertStation(new Station(x, y, mode, xv,  yv));
+                            }
+                        }
+                    } catch(IOException e) {
+                        Model.debug.println("File IO exception in Action.execute(7)");
+                        System.exit(1);
+                    }
+                else try {
+                    boolean seenNetwork = false;
+                    while((line = Model.input.readLine()) != null) {
+//                        Model.debug.println("Line: " + line);
+                        StringTokenizer tokenizer = new StringTokenizer(line," ,[]");
+                        String token = tokenizer.nextToken();
+                        if( token.equals("Radius")) {
+                            Model.radius = Integer.parseInt(tokenizer.nextToken());
+                            Model.setRadii(Model.radius);
+//                            Model.debug.println("Set radius");
+                        } else if( token.equals("Station")) {
+                            int ID = Integer.parseInt(tokenizer.nextToken());
+                            x = Integer.parseInt(tokenizer.nextToken());
+                            y = Integer.parseInt(tokenizer.nextToken());
+                            Station st = new Station(x, y);
+                            Model.insertStation(st);
+//                            Model.debug.println("Add " + st);
+                        } else if( token.equals("Network")) {
+                            if(!seenNetwork) {
+                                Model.networks = new ArrayList();
+                                seenNetwork = true;
+                            }
+                            Network net = new Network(Integer.parseInt(tokenizer.nextToken()));
+                            while(tokenizer.hasMoreTokens()) {
+                                int ndx = Integer.parseInt(tokenizer.nextToken());
+                                net.insertStation(Model.node[ndx]);
+                            }
+                            Model.networks.add(net);
+                            if(Model.doDbg)
+                                Model.debug.println("Add " + net + "; "
+                                    + Model.networks.size() + " networks");
+                        }
+                    }
+                } catch(IOException e) {
+                    Model.debug.println("File IO exception in Action.execute(7)");
+                    System.exit(1);
+                }
+                Model.myPanel.repaint();
+                break;
+        }
+    }
+    
+    
+    /**
+     * convert action to a string
+     * @return the string
+     */
+    @Override
+    public String toString() {
+        return "Action( " + type + ", " + p1 + ", " + p2 + ")"; 
+    }
+}

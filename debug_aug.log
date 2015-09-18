@@ -1,0 +1,589 @@
+debug log opened
+22. setState:: pathState changed to WAIT - reset
+22. setState:: pathState changed to WAIT - reset
+22. setState:: pathState changed to WAIT - reset
+22. setState:: pathState changed to WAIT - Start flow
+22. setState:: pathState changed to FIND_ENDS - Start flow
+showNodes:: startSending; has ball: -1
+Node 0; from here = -1; 0: sending; token
+Node 1; from here = -1; 0: not sending; no token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = -1; 0: not sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+startSending restart dead SubNet Node 0; from here = -1; 0: sending; token triggered by null on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = FIND_ENDS; fromHereTo = -1
+22. setState:: pathState changed to WAIT - Constructor
+22. setState:: pathState changed to FIND_ENDS - Start flow
+>>>>>> Path is 0 > 1
+24. update FIND_ENDS:: ends are from 0  to 1
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+25. update FIND_ROUTE:: Final route from 0 to 1
+28. update FIND_ROUTE:: Make a route from 0 to 1 using network subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+showNodes:: is 0 running; has ball: 0
+Node 0; from here = -1; 0: sending; token
+Node 1; from here = -1; 0: not sending; no token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = -1; 0: not sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+22. setState:: pathState changed to WAIT_FOR_HIT - Started a message
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 4<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 4<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 4<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 4<<<<<
+Sender 0; 0 has the ball; receiver 1
+>>>>>> Finished that cycle
+token from 0 reached 1
+showNodes:: startSending; has ball: 0
+Node 0; from here = 1; 0: sending; no token
+Node 1; from here = -1; 0: sending; token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = -1; 0: not sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+startSending Node updatePosition Node 1; from here = -1; 0: sending; token triggered by Node 0; from here = 1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 0 hasBall 0 sender.fromHereTo 1 receiver 1<<<<<
+Ball arrived at 1 from 0
+22. setState:: pathState changed to WAIT - Finished the Path
+22. setState:: pathState changed to FIND_ENDS - Start flow
+24. update FIND_ENDS:: ends are from 0  to 3
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+>>> sender 0 hasBall -1 sender.fromHereTo 1 receiver 1<<<<<
+25. update FIND_ROUTE:: Final route from 0 to 3
+28. update FIND_ROUTE:: Make a route from 0 to 3 using network subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+showNodes:: is 0 running; has ball: 0
+Node 0; from here = 1; 0: sending; no token
+Node 1; from here = -1; 0: sending; token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = -1; 0: not sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+22. setState:: pathState changed to WAIT_FOR_HIT - Started a message
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 1<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 3<<<<<
+Ball arrived at 3 from 0
+22. setState:: pathState changed to WAIT - Finished the Path
+22. setState:: pathState changed to FIND_ENDS - Start flow
+24. update FIND_ENDS:: ends are from 1  to 0
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+>>> sender 0 hasBall -1 sender.fromHereTo 3 receiver 3<<<<<
+25. update FIND_ROUTE:: Final route from 1 to 0
+28. update FIND_ROUTE:: Make a route from 1 to 0 using network subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+showNodes:: is 1 running; has ball: 1
+Node 0; from here = 3; 0: sending; no token
+Node 1; from here = -1; 0: sending; token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = -1; 0: not sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+22. setState:: pathState changed to WAIT_FOR_HIT - Started a message
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+Sender 1; 1 has the ball; receiver 2
+token from 1 reached 2
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; token
+Node 3; from here = -1; 0: not sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+startSending Node updatePosition Node 2; from here = -1; 0: sending; token triggered by Node 1; from here = 0; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+Sender 2; 1 has the ball; receiver 3
+token from 2 reached 3
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = -1; 0: sending; token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+startSending Node updatePosition Node 3; from here = -1; 0: sending; token triggered by Node 2; from here = -1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 5<<<<<
+Sender 3; 1 has the ball; receiver 5
+token from 3 reached 5
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = -1; 0: sending; no token
+Node 4; from here = -1; 0: not sending; no token
+Node 5; from here = -1; 0: sending; token
+startSending Node updatePosition Node 5; from here = -1; 0: sending; token triggered by Node 3; from here = -1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+Sender 5; 1 has the ball; receiver 4
+token from 5 reached 4
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = -1; 0: sending; no token
+Node 4; from here = -1; 0: sending; token
+Node 5; from here = -1; 0: sending; no token
+startSending Node updatePosition Node 4; from here = -1; 0: sending; token triggered by Node 5; from here = -1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+Ball arrived at 0 from 1
+22. setState:: pathState changed to WAIT - Finished the Path
+22. setState:: pathState changed to FIND_ENDS - Start flow
+24. update FIND_ENDS:: ends are from 3  to 0
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+>>> sender 1 hasBall -1 sender.fromHereTo 0 receiver 0<<<<<
+25. update FIND_ROUTE:: Final route from 3 to 0
+28. update FIND_ROUTE:: Make a route from 3 to 0 using network subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+showNodes:: is 3 running; has ball: 3
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = -1; 0: sending; no token
+Node 4; from here = -1; 0: sending; token
+Node 5; from here = -1; 0: sending; no token
+22. setState:: pathState changed to WAIT_FOR_HIT - Started a message
+>>> sender 1 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 1 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+Ball arrived at 0 from 3
+22. setState:: pathState changed to WAIT - Finished the Path
+>>> sender 4 hasBall -1 sender.fromHereTo -1 receiver 2<<<<<
+22. setState:: pathState changed to FIND_ENDS - Start flow
+24. update FIND_ENDS:: ends are from 4  to 1
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+>>> sender 3 hasBall -1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 4 hasBall -1 sender.fromHereTo -1 receiver 2<<<<<
+25. update FIND_ROUTE:: Final route from 4 to 1
+28. update FIND_ROUTE:: Make a route from 4 to 1 using network subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+showNodes:: is 4 running; has ball: 4
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: not sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = 0; 0: sending; no token
+Node 4; from here = -1; 0: sending; token
+Node 5; from here = -1; 0: sending; no token
+22. setState:: pathState changed to WAIT_FOR_HIT - Started a message
+>>> sender 3 hasBall 4 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 4 hasBall 4 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 3 hasBall 4 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 4 hasBall 4 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 5 hasBall 4 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 5 hasBall 4 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 5 hasBall 4 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 5 hasBall 4 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 4 hasBall 4 sender.fromHereTo 1 receiver 1<<<<<
+Ball arrived at 1 from 4
+22. setState:: pathState changed to WAIT - Finished the Path
+22. setState:: pathState changed to FIND_ENDS - Start flow
+24. update FIND_ENDS:: ends are from 0  to 3
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+>>> sender 4 hasBall -1 sender.fromHereTo 1 receiver 1<<<<<
+25. update FIND_ROUTE:: Final route from 0 to 3
+28. update FIND_ROUTE:: Make a route from 0 to 3 using network subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+showNodes:: is 0 running; has ball: 0
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: not sending; no token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = 0; 0: not sending; no token
+Node 4; from here = 1; 0: sending; token
+Node 5; from here = -1; 0: sending; no token
+22. setState:: pathState changed to RUN - Started a message
+>>> sender 4 hasBall 0 sender.fromHereTo 1 receiver 1<<<<<
+>>> sender 4 hasBall 0 sender.fromHereTo 1 receiver 1<<<<<
+Sender 4; 0 has the ball; receiver 0
+token from 4 reached 0
+showNodes:: startSending; has ball: 0
+Node 0; from here = 3; 0: sending; token
+Node 1; from here = 0; 0: not sending; no token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = 0; 0: not sending; no token
+Node 4; from here = 1; 0: sending; no token
+Node 5; from here = -1; 0: not sending; no token
+startSending Node updatePosition Node 0; from here = 3; 0: sending; token triggered by Node 4; from here = 1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 3, 2, 1]
+startSending state = RUN; fromHereTo = 3
+>>> sender 4 hasBall 0 sender.fromHereTo 1 receiver 0<<<<<
+>>> sender 4 hasBall 0 sender.fromHereTo 1 receiver 0<<<<<
+>>> sender 4 hasBall 0 sender.fromHereTo 1 receiver 0<<<<<
+>>> sender 4 hasBall 0 sender.fromHereTo 1 receiver 0<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 5<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 2<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 2<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 2<<<<<
+Sender 0; 0 has the ball; receiver 1
+token from 0 reached 1
+showNodes:: startSending; has ball: 0
+Node 0; from here = 3; 0: sending; no token
+Node 1; from here = 0; 0: sending; token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = 0; 0: not sending; no token
+Node 4; from here = 1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+startSending Node updatePosition Node 1; from here = 0; 0: sending; token triggered by Node 0; from here = 3; 0: sending; no token on subNet 0 containing node IDs [0, 4, 5, 2, 3, 1]
+startSending state = RUN; fromHereTo = 0
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 1<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 1<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 4<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 1<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 4<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 1<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 4<<<<<
+>>> sender 0 hasBall 0 sender.fromHereTo 3 receiver 3<<<<<
+Ball arrived at 3 from 0
+22. setState:: pathState changed to WAIT - Finished the Path
+22. setState:: pathState changed to FIND_ENDS - Start flow
+24. update FIND_ENDS:: ends are from 1  to 0
+22. setState:: pathState changed to FIND_ROUTE - Found ends
+>>> sender 0 hasBall -1 sender.fromHereTo 3 receiver 3<<<<<
+25. update FIND_ROUTE:: Final route from 1 to 0
+28. update FIND_ROUTE:: Make a route from 1 to 0 using network subNet 0 containing node IDs [0, 4, 5, 2, 3, 1]
+showNodes:: is 1 running; has ball: 1
+Node 0; from here = 3; 0: sending; no token
+Node 1; from here = 0; 0: sending; token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = 0; 0: not sending; no token
+Node 4; from here = 1; 0: not sending; no token
+Node 5; from here = -1; 0: not sending; no token
+22. setState:: pathState changed to WAIT_FOR_HIT - Started a message
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 2<<<<<
+Sender 1; 1 has the ball; receiver 5
+token from 1 reached 5
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: not sending; no token
+Node 3; from here = 0; 0: not sending; no token
+Node 4; from here = 1; 0: not sending; no token
+Node 5; from here = -1; 0: sending; token
+startSending Node updatePosition Node 5; from here = -1; 0: sending; token triggered by Node 1; from here = 0; 0: sending; no token on subNet 0 containing node IDs [0, 4, 3, 2, 5, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 5<<<<<
+Sender 5; 1 has the ball; receiver 2
+token from 5 reached 2
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; token
+Node 3; from here = 0; 0: not sending; no token
+Node 4; from here = 1; 0: not sending; no token
+Node 5; from here = -1; 0: sending; no token
+startSending Node updatePosition Node 2; from here = -1; 0: sending; token triggered by Node 5; from here = -1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 3, 2, 5, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = -1
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 2<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 3<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 2 hasBall 1 sender.fromHereTo -1 receiver 5<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 1 hasBall 1 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 5 hasBall 1 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 3 hasBall 1 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 0 hasBall 1 sender.fromHereTo 3 receiver 3<<<<<
+Sender 2; 1 has the ball; receiver 3
+token from 2 reached 3
+showNodes:: startSending; has ball: 1
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = 0; 0: sending; token
+Node 4; from here = 1; 0: not sending; no token
+Node 5; from here = -1; 0: sending; no token
+startSending Node updatePosition Node 3; from here = 0; 0: sending; token triggered by Node 2; from here = -1; 0: sending; no token on subNet 0 containing node IDs [0, 4, 3, 2, 5, 1]
+startSending state = WAIT_FOR_HIT; fromHereTo = 0
+22. setState:: pathState changed to RUN - startSending
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 0 hasBall 3 sender.fromHereTo 3 receiver 3<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 4<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 1<<<<<
+>>> sender 1 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 1 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 1 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 1 hasBall 3 sender.fromHereTo 0 receiver 0<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 2<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 2<<<<<
+Sender 3; 3 has the ball; receiver 4
+token from 3 reached 4
+showNodes:: startSending; has ball: 3
+Node 0; from here = 3; 0: not sending; no token
+Node 1; from here = 0; 0: sending; no token
+Node 2; from here = -1; 0: sending; no token
+Node 3; from here = 0; 0: sending; no token
+Node 4; from here = 1; 0: sending; token
+Node 5; from here = -1; 0: sending; no token
+startSending Node updatePosition Node 4; from here = 1; 0: sending; token triggered by Node 3; from here = 0; 0: sending; no token on subNet 0 containing node IDs [0, 4, 3, 2, 5, 1]
+startSending state = RUN; fromHereTo = 1
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 4<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 5<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 5 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 1<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 1<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 1<<<<<
+>>> sender 3 hasBall 3 sender.fromHereTo 0 receiver 1<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 5<<<<<
+>>> sender 2 hasBall 3 sender.fromHereTo -1 receiver 0<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 2<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 3<<<<<
+>>> sender 4 hasBall 3 sender.fromHereTo 1 receiver 1<<<<<
