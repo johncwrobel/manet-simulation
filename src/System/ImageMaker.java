@@ -23,10 +23,13 @@ public class ImageMaker {
 
 
     public static BufferedImage createImage() {
-        BufferedImage img 
-//                = new BufferedImage(Model.imageWidth, Model.imageHeight,
-//                        BufferedImage.TYPE_INT_RGB);
-                = loadImage("C:/Users/David/Pictures/backgroundq.png");
+        BufferedImage img = null;
+
+        try {
+            img = ImageIO.read(new File(ImageMaker.class.getResource("../images/background.png").toURI()));
+        } catch (Exception e) {
+            img = new BufferedImage(Model.imageWidth, Model.imageHeight, BufferedImage.TYPE_INT_RGB);
+        }
         img.createGraphics();
         Graphics2D g = (Graphics2D) img.getGraphics();
         fixColors(g);
