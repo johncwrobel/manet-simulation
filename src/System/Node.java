@@ -44,6 +44,8 @@ public class Node {
      */
     private double vy;
 
+    private boolean isMainHub;
+
     public int fromHereTo;
     public int shouldGoTo;
 
@@ -99,6 +101,7 @@ public class Node {
         status[1] = new NetStatus();
         fromHereTo = -1;
         shouldGoTo = -1;
+        isMainHub = false;
     }
 
     /**
@@ -284,6 +287,9 @@ public class Node {
         g.setColor(Color.red);
         g.fillOval(px - 2, py - 2, 4, 4);
         String str = "" + ID;
+        if (isMainHub) {
+            str = "Main Hub";
+        }
         g.drawString(str, px + 10, py - 5);
     }
 
@@ -640,6 +646,10 @@ public class Node {
             res++;
         }
         return res;
+    }
+
+    public void setIsMainHub(boolean isMainHub) {
+        this.isMainHub = isMainHub;
     }
 
     /**
