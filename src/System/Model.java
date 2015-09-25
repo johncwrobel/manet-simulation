@@ -41,7 +41,7 @@ public class Model {
      * Labels on the custom buttons *
      */
     public static String Labels[] = {"Reset", "Go", " Add", "Radius",
-        "Details", "Flow", "Speed", "Preset"};
+        "Details", "Flow", "Speed", "Preset", "Debug"};
     // typedefs for buttons
     private static final int RESET = 0;
     private static final int GO = 1;
@@ -51,6 +51,7 @@ public class Model {
     private static final int FLOW = 5;
     private static final int SET_SPEED = 6;
     private static final int PRESET = 7;
+    private static final int PRINT_DEBUG = 8;
     /**
      * want to include copyright?
      */
@@ -480,6 +481,14 @@ public class Model {
                 } catch (Exception e) {
                 }
                 break;
+
+            case PRINT_DEBUG:
+                for (int i = 0; i < node.length; i++) {
+                    System.out.println(node[i].toString());
+                    System.out.println(node[i].status[0].toString());
+                    System.out.println(node[i].status[1].toString());
+
+                }
         }
 //		debug.println("dobutton(" + code + ")");
     }
@@ -545,6 +554,9 @@ public class Model {
         int ist = node.length;
         if (newID) {
             nd.ID = ist;
+            if (ist == 0) {
+                nd.setIsMainHub(true);
+            }
             node = bumpNodes(node, nd);
         }
         findSubNets(nd, "insertNode:: ");
