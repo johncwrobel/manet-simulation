@@ -41,7 +41,7 @@ public class Model {
      * Labels on the custom buttons *
      */
     public static String Labels[] = {"Reset", "Go", " Add", "Radius",
-        "Details", "Flow", "Speed", "Preset"};
+        "Details", "Flow", "Speed", "Preset", "Print Info"};
     // typedefs for buttons
     private static final int RESET = 0;
     private static final int GO = 1;
@@ -51,6 +51,7 @@ public class Model {
     private static final int FLOW = 5;
     private static final int SET_SPEED = 6;
     private static final int PRESET = 7;
+    private static final int PRINT_NODE_INFO = 8;
     /**
      * want to include copyright?
      */
@@ -480,17 +481,27 @@ public class Model {
                 } catch (Exception e) {
                 }
                 break;
+
+            case PRINT_NODE_INFO:
+                //doTimer();
+                for (int i = 0; i < node.length; i++) {
+                    System.out.println("Node info: ");
+                    System.out.println(node[i].toString());
+                    System.out.println(node[i].status[0].toString());
+                    System.out.println(node[i].status[1].toString());
+                }
+                break;
         }
 //		debug.println("dobutton(" + code + ")");
     }
 
     private void doAdd() {
         Node it = null;
-        if (fixedAdds && addedThis < AX_Value.length) {
+        if (fixedAdds && addedThis < AX_Value.length) { //the preset button was pressed so we fix the positions.
             it = new Node(AX_Value[addedThis], AY_Value[addedThis]);
             addedThis++;
         } else {
-            it = randomPoint();
+            it = randomPoint(); //preset wasn't pressed so we just place at random point.
         }
         if (Model.doDbg) {
             debug.println("doButton:: adding " + it);
@@ -543,8 +554,13 @@ public class Model {
      */
     public static void insertNode(Node nd, boolean newID) {
         int ist = node.length;
-        if (newID) {
-            nd.ID = ist;
+        if (newID) { //hardcoded to be true when we call doAdd()
+            //Kevin's Add
+            if (ist == 0) {
+                nd.setObserverNode(true);
+            }
+            //End Kevin's Add
+            nd.ID = ist; //set the id to its correponding index
             node = bumpNodes(node, nd);
         }
         findSubNets(nd, "insertNode:: ");
@@ -552,7 +568,8 @@ public class Model {
 
     public static void findSubNets(Node nd, String title) {
         boolean done = false;
-        SubNet net = null;
+        SubNet net = null; //initialize a subnet
+        //if node alredy exists within a subnet then we are done
         for (int i = 0; i < subNets.size(); i++) {
             net = (SubNet) subNets.get(i);
             if (nd.isIn(net)) {
@@ -1065,7 +1082,7 @@ public class Model {
         // if (doDbg) {
         // debug.println("11. bumpNodes:: " + toAdd);
         // }
-        Node res[] = new Node[orig.length + 1];
+        Node res[] = new Node[orig.length + 1]; //copy over old array and then add new node to end of array
         for (int i = 0; i < orig.length; i++) {
             res[i] = orig[i];
         }

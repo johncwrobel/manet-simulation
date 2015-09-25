@@ -84,6 +84,7 @@ public class Path {
                 furthest = closest;
                 startNode = node[0];
                 endNode = node[0];
+                //gets the closest and furthest node distance wise from the current node.
                 for (int i = 0; i < node.length; i++) {
                     int d = inPtDistance(i, cornerX, cornerY);
                     if (d < Integer.MAX_VALUE && d > furthest) {
@@ -113,6 +114,8 @@ public class Path {
                     net = goingFromNode.status[i].net;
                     if (net != null && net.isin(endNode.ID)) {
                         routeFrom = goingFromNode.ID;
+                        //KEVIN's CHANGE ROUTETO
+                        //routeTo = 0;
                         routeTo = endNode.ID;
                         if (Model.doDbg) {
                             Model.debug.println("25. update FIND_ROUTE:: Final route from " + routeFrom + " to " + routeTo);

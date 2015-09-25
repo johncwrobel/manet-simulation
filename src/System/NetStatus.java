@@ -12,7 +12,7 @@ public class NetStatus {
     public boolean hasToken;
     public boolean sending;
     public double radius;
-    public Node host;
+    public Node host; //Kevin - WHAT IS THIS??? is this the host of the network/ the observer node/hub everything sends to?
     public int cclx, ccly;
     
     public NetStatus() {

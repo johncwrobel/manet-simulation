@@ -44,6 +44,8 @@ public class Node {
      */
     private double vy;
 
+    private boolean isObserverNode;
+
     public int fromHereTo;
     public int shouldGoTo;
 
@@ -94,11 +96,12 @@ public class Node {
         this.vx = xv;
         this.vy = yv;
         marked = Mode.NONE;
-        status = new NetStatus[2];
+        status = new NetStatus[2]; //array of two NetStatus arrays
         status[0] = new NetStatus();
         status[1] = new NetStatus();
         fromHereTo = -1;
         shouldGoTo = -1;
+        isObserverNode = false;
     }
 
     /**
@@ -284,6 +287,11 @@ public class Node {
         g.setColor(Color.red);
         g.fillOval(px - 2, py - 2, 4, 4);
         String str = "" + ID;
+        //Kevin's addition
+        if (isObserverNode) {
+            str= "Observer Node";
+        }
+        //end Kevin's addition
         g.drawString(str, px + 10, py - 5);
     }
 
@@ -642,6 +650,17 @@ public class Node {
         return res;
     }
 
+    /*
+     *
+     */
+    public void setObserverNode(boolean isObserverNode) {
+        this.isObserverNode = isObserverNode;
+    }
+
+    public boolean isObserverNode() {
+        return isObserverNode;
+    }
+
     /**
      * string representation
      *
@@ -657,6 +676,9 @@ public class Node {
                 res += " " + status[ch].net.ID;
             }
         }
+        res += " isObserveNode: " + isObserverNode;
+        res += " should go to: " + shouldGoTo;
+        res += " from here toL " + fromHereTo;
         return res;
     }
 }
