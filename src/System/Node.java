@@ -190,6 +190,10 @@ public class Node {
         }
     }
 
+    public void paintHubReceived(Graphics g) {
+
+    }
+
     public void doPaint(Graphics g) {
 //        Model.paintText(g, Color.black, toString(), 20, 20 + ID * 20);
         if (Model.doFlow) {
@@ -213,7 +217,6 @@ public class Node {
                                 int rad2 = rad + rad;
                                 g.drawOval(status[ch].cclx - rad, status[ch].ccly - rad, rad2,
                                         rad2);
-
                                 // check for next node
                                 // if this node has the ball
                                 if (ID == Path.getBall()) {
@@ -269,21 +272,21 @@ public class Node {
                 go = false;
                 break;
             case START:
-                g.setColor(Color.green);
+                //g.setColor(Color.green);
                 break;
             case GO_TO:
-                g.setColor(Color.magenta);
+                //g.setColor(Color.magenta);
                 break;
             case END:
-                g.setColor(Color.red);
+                //g.setColor(Color.red);
                 break;
             case GO_FROM:
-                g.setColor(Color.cyan);
+                //g.setColor(Color.cyan);
                 break;
         }
-        if (go) {
+        /*if (go) {
             g.fillOval(px - 8, py - 8, 16, 16);
-        }
+        }*/
         g.setColor(Color.red);
         g.fillOval(px - 2, py - 2, 4, 4);
         String str = "" + ID;
@@ -448,6 +451,7 @@ public class Node {
                                         Model.debug.println("Ball arrived at " + receiver.ID
                                                 + " from " + sender.ID);
                                     }
+
                                     Path.firstDraw = false;
                                     net.flowing = false;
                                     //                            Model.node[Model.routeFrom].stopSending(channel);
