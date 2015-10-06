@@ -512,10 +512,12 @@ public class Node {
         if (avy > Model.MAXV) {
             vy = Model.MAXV * avy / vy;
         }
-        fx += vx;
-        fy += vy;
-        px = (int) fx;
-        py = (int) fy;
+        if (!isMainHub) {
+            fx += vx;
+            fy += vy;
+            px = (int) fx;
+            py = (int) fy;
+        }
     }
 
     public boolean isIn(SubNet net) {
