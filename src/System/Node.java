@@ -272,7 +272,7 @@ public class Node {
                 go = false;
                 break;
             case START:
-                //g.setColor(Color.green);
+                g.setColor(Color.green);
                 break;
             case GO_TO:
                 //g.setColor(Color.magenta);
@@ -284,9 +284,9 @@ public class Node {
                 //g.setColor(Color.cyan);
                 break;
         }
-        /*if (go) {
+        if (go) {
             g.fillOval(px - 8, py - 8, 16, 16);
-        }*/
+        }
         g.setColor(Color.red);
         g.fillOval(px - 2, py - 2, 4, 4);
         String str = "" + ID;
