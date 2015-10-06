@@ -486,36 +486,38 @@ public class Node {
                 }
             }
         }
-        if (!collide) {
-            dvx = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
-            dvy = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
+        if (!isMainHub) {
+            if (!collide) {
+                dvx = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
+                dvy = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
+            }
+            if ((px < Model.EDGE) && (dvx < 0)) {
+                dvx = -dvx;
+            }
+            if ((py < Model.EDGE) && (dvy < 0)) {
+                dvy = -dvy;
+            }
+            if ((px > (Model.screenSize.width - Model.EDGE)) && (dvx > 0)) {
+                dvx = -dvx;
+            }
+            if ((py > (Model.screenSize.height - Model.EDGE)) && (dvy > 0)) {
+                dvy = -dvy;
+            }
+            vx += dvx / 10;
+            vy += dvy / 10;
+            double avx = Math.abs(vx);
+            if (avx > Model.MAXV) {
+                vx = Model.MAXV * avx / vx;
+            }
+            double avy = Math.abs(vy);
+            if (avy > Model.MAXV) {
+                vy = Model.MAXV * avy / vy;
+            }
+            fx += vx;
+            fy += vy;
+            px = (int) fx;
+            py = (int) fy;
         }
-        if ((px < Model.EDGE) && (dvx < 0)) {
-            dvx = -dvx;
-        }
-        if ((py < Model.EDGE) && (dvy < 0)) {
-            dvy = -dvy;
-        }
-        if ((px > (Model.screenSize.width - Model.EDGE)) && (dvx > 0)) {
-            dvx = -dvx;
-        }
-        if ((py > (Model.screenSize.height - Model.EDGE)) && (dvy > 0)) {
-            dvy = -dvy;
-        }
-        vx += dvx / 10;
-        vy += dvy / 10;
-        double avx = Math.abs(vx);
-        if (avx > Model.MAXV) {
-            vx = Model.MAXV * avx / vx;
-        }
-        double avy = Math.abs(vy);
-        if (avy > Model.MAXV) {
-            vy = Model.MAXV * avy / vy;
-        }
-        fx += vx;
-        fy += vy;
-        px = (int) fx;
-        py = (int) fy;
     }
 
     public boolean isIn(SubNet net) {
