@@ -10,6 +10,7 @@
  */
 package System;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static System.Model.cornerX;
@@ -33,6 +34,7 @@ public class Path {
     public static Model.State pathState;
     private static int goingTo = -1;
     private static int hasBall = -1;
+    public static ArrayList<Integer> hasBallArr = new ArrayList<Integer>();
     public static Node goingFromNode = null;
     public static boolean running = false;
     public static boolean firstDraw = false;
@@ -43,6 +45,9 @@ public class Path {
         hasBall = -1;
         running = false;
         firstDraw = false;
+        for (int i = 0; i < node.length; i++) {
+            hasBallArr.add(0);
+        }
     }
 
     public static void setBall(int nd) {
@@ -50,8 +55,34 @@ public class Path {
         hasBall = nd;
     }
 
+    public void setBallArr() {
+        Random random = new Random();
+        for (int i = 1; i < hasBallArr.size(); i++) {
+            Integer randInt = random.nextInt(2);
+            if (randInt == 1) {
+                hasBallArr.set(i, 1);
+            } else {
+                hasBallArr.set(i, 0);
+            }
+        }
+    }
+
+    public static void addToBallAr(int ID) {
+        hasBallArr.add(ID, 0);
+    }
+
     public static int getBall() {
         return hasBall;
+    }
+
+    public static boolean getBallArr(Integer ID) {
+        if (ID >= node.length || node.length == 0) {
+            return false;
+        }
+        if (hasBallArr.get(ID) == 1) {
+            return true;
+        }
+        return false;
     }
 
     public static void setGoingTo(int nd) {
@@ -183,7 +214,11 @@ public class Path {
                     nd.fromHereTo = routeTo;
                     if (routeTo < node.length && routeTo >= 0) {
                         //  set the hasBball and goingTo values
-                        setBall(routeFrom);
+                        //setBall(routeFrom);
+                        for (int i = 0; i < node.length; i++) {
+
+                        }
+                        setBallArr();
                         setGoingTo(routeTo);
                         setState(Model.State.RUN, "Started a message");
                     }
@@ -192,6 +227,7 @@ public class Path {
                 // route segment starts, then to FINISHED_ROUTE when it ends
                 break;
             case WAIT_FOR_HIT:
+                Path.setState(Model.State.RUN, "");
             case RUN:
                 // make sure the route is still feasible - node going to has more than one net
                 found = routeTo == endNode.ID || subNets.size() > 1;
@@ -204,25 +240,38 @@ public class Path {
                             "Path to " + routeTo + " with end " + endNode.ID + " nn = " + subNets.size() + " became unfeasible");
                     Node.clearAll(false);
                 } else {
-                    int gtb = getBall();
-                        if(gtb >= 0) {
-                        Node there = Model.node[getBall()];
-                        for(int i = 0; i < 2; i++) {
-                            SubNet nt = there.status[i].net;
-                            if(nt != null && !nt.flowing) {
-                                nt.flowing = true;
+                    for (int j = 0; j < node.length; j++) {
+                        if (getBallArr(j)) {
+                            Node there = Model.node[j];
+                            for (int i = 0; i < 2; i++) {
+                                SubNet nt = there.status[i].net;
+                                if (nt != null && !nt.flowing) {
+                                    nt.flowing = true;
+                                }
                             }
                         }
+/*                        int gtb = getBall();
+                        if (gtb >= 0) {
+                            Node there = Model.node[getBall()];
+                            for (int i = 0; i < 2; i++) {
+                                SubNet nt = there.status[i].net;
+                                if (nt != null && !nt.flowing) {
+                                    nt.flowing = true;
+                                }
+                            }
+                        }*/
                     }
                 }
                 break;
             case FINISHED:
-                if (endNode.ID != routeTo) {
+                System.out.println("FINISHED");
+                /*if (endNode.ID != routeTo) {
                     setState(Model.State.FIND_ROUTE, "Another segment");
-                } else {
+                } else {*/
+                    setBallArr();
                     routeFrom = -1;
                     routeTo = -1;
-                }
+                //}
                 break;
         }
     }

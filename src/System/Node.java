@@ -197,6 +197,10 @@ public class Node {
     public void doPaint(Graphics g) {
 //        Model.paintText(g, Color.black, toString(), 20, 20 + ID * 20);
         if (Model.doFlow) {
+            if (Path.getBallArr(ID)) {
+                g.setColor(Color.green);
+                g.fillOval((int) px - 8, (int) py - 8, 16, 16);
+            }
             // for all networks
             for (int ch = 0; ch < Model.PORTAL_NET_CAPACITY; ch++) {
                 // if you are sending
@@ -219,7 +223,12 @@ public class Node {
                                         rad2);
                                 // check for next node
                                 // if this node has the ball
-                                if (ID == Path.getBall()) {
+            /*                    if (ID == Path.getBall()) { */
+                                if (Path.getBallArr(ID)) {
+// PAINTS GREEN ->>>>                                   if (Path.getBallArr(ID)) {
+//                                        g.setColor(Color.green);
+//                                        g.fillOval((int) px - 8, (int) py - 8, 16, 16);
+//                                    }
                                     // and if it has a destination
                                     int toN = Path.getGoingTo();
                                     if (toN >= 0) {
@@ -243,9 +252,9 @@ public class Node {
                                             }
                                             Path.firstDraw = true;
                                         }
-                                        // put the node's spot on 
+                                        // put the node's spot on
                                         g.setColor(Color.red);
-                                        g.fillOval((int) px - 4, (int) py - 4, 8, 8);
+                                        g.fillOval((int) px - 4, (int) py - 4, 8, 8); //draws the ball on the circle
                                     }
                                 }
                             }
@@ -267,6 +276,9 @@ public class Node {
 //            }
 //        }
         boolean go = true;
+        /*if (Path.getBallArr(ID)) {
+            g.setColor(Color.green);
+        }*/
         switch (marked) {
             case NONE:
                 go = false;
@@ -415,6 +427,39 @@ public class Node {
                             double er = Math.abs(d - sender.status[sendCh].radius);
                             if (er < Model.radialSpeed) {
                                 // something arrived somewhere
+
+                                /*if (Path.getBallArr(sender.ID)) {
+                                    Path.hasBallArr.set(sender.ID, 0);
+                                }*/
+
+                                /*int myRcvCh = receiver.findChannel(net, false);
+                                if (receiver.ID == 0 && sender.ID == 4) {
+                                    System.out.println("receiver is: " + receiver.ID + " and sender is: " + sender.ID);
+                                    //int myRcvCh = receiver.findChannel(net, false);
+                                    System.out.println(receiver.status[myRcvCh].prev.ID);
+                                    Path.setState(Model.State.WAIT_FOR_HIT, "because");
+                                    //Path.firstDraw = false;
+                                    //net.flowing = true;
+                                    //clearAll(false);
+                                    Path.setBallArr();
+                                    this.mark();
+                                    break;*/
+                                /*
+
+                                    Path.setState(Model.State.FINISHED, "Finished the Path");
+                                    Path.firstDraw = false;
+                                    net.flowing = false;
+                                    //                            Model.node[Model.routeFrom].stopSending(channel);
+                                    sender.fromHereTo = -1;
+                                    // if finished the path, go back to wait
+                                    Path.setBall(-1);
+                                    clearAll(true);
+                                    //Path.setState(Model.State.WAIT, "Finished the Path");
+                                    break;
+                                }*/
+
+
+
                                 // sender might be receiver's prev on this channel
                                 int rcvCh = receiver.findChannel(net, false);
                                 if (rcvCh > -1 && sender == receiver.status[rcvCh].prev
@@ -445,8 +490,23 @@ public class Node {
                                             + "; Path.pathState " + Path.pathState
                                             + "<<<<<");
                                 }
-                                if (sender.ID == Path.getBall()
+                                /*if (sender.ID == 0) {
+                                    Path.setState(Model.State.FINISHED, "Finished the Path");
+                                    Path.firstDraw = false;
+                                    net.flowing = false;
+                                    //                            Model.node[Model.routeFrom].stopSending(channel);
+                                    sender.fromHereTo = -1;
+                                    // if finished the path, go back to wait
+                                    Path.setBall(-1);
+                                    clearAll(true);
+                                    //Path.setState(Model.State.WAIT, "Finished the Path");
+                                    break;
+                                }*/
+                                //if (sender.ID == Path.getBall()
+                                //System.out.println(sender.fromHereTo + " " + receiver.ID);
+                                if (Path.getBallArr(sender.ID)
                                         && sender.fromHereTo == receiver.ID) {
+                                    System.out.println(sender.fromHereTo + " " + receiver.ID);
                                     if (Model.doDbg) {
                                         Model.debug.println("Ball arrived at " + receiver.ID
                                                 + " from " + sender.ID);
@@ -456,6 +516,7 @@ public class Node {
                                     net.flowing = false;
                                     //                            Model.node[Model.routeFrom].stopSending(channel);
                                     sender.fromHereTo = -1;
+
                                     // if finished the path, go back to wait
                                     if (Model.endNode.ID == Model.routeTo) {
                                         Path.setBall(-1);
@@ -469,7 +530,8 @@ public class Node {
                                         Path.goingFromNode = Model.node[Model.routeTo];
                                         Path.goingFromNode.mark(Mode.GO_FROM);
                                         // check if the new from node is waiting to start
-                                        if (ID == Path.getBall()) {
+                                        //if (ID == Path.getBall()) {
+                                        if (Path.getBallArr(ID)) {
                                             // if so, enable ball drawing
                                             Path.running = true;
                                             net.flowing = true;
@@ -512,10 +574,12 @@ public class Node {
         if (avy > Model.MAXV) {
             vy = Model.MAXV * avy / vy;
         }
-        fx += vx;
-        fy += vy;
-        px = (int) fx;
-        py = (int) fy;
+        if (!isMainHub) {
+            fx += vx;
+            fy += vy;
+            px = (int) fx;
+            py = (int) fy;
+        }
     }
 
     public boolean isIn(SubNet net) {

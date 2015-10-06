@@ -686,6 +686,7 @@ public class Model {
      * @param d the screen size
      */
     public void doPaint(Graphics g, Dimension d) {
+        System.out.println(Path.getState());
         screenSize = d;
         int bot = screenSize.height - 60;
         int mid = screenSize.width / 2;
@@ -1077,6 +1078,7 @@ public class Model {
         // if (doDbg) {
         // debug.println("11. bumpNodes:: " + toAdd);
         // }
+        Path.addToBallAr(toAdd.ID);
         Node res[] = new Node[orig.length + 1];
         for (int i = 0; i < orig.length; i++) {
             res[i] = orig[i];

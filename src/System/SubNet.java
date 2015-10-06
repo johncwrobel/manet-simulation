@@ -9,8 +9,7 @@
  */
 package System;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 
 /**
  * container for once complete cluster
@@ -217,8 +216,16 @@ public class SubNet {
         if (length() > 0) {
             centroid();
             g.setColor(c);
-            g.fillOval(cx - c_radius, cy - c_radius, dia, dia);
+            int[] x = new int[3];
+            int[] y = new int[3];
+            x[0]=cx; x[1]=cx-5; x[2] = cx+5;
+            y[0] = cy-5;
+            y[1] = cy+5;
+            y[2] = cy+5;
+            //g.fillOval(cx - c_radius, cy - c_radius, dia, dia);
+            Polygon p = new Polygon(x, y, 3);
             Node node = members.first;
+            g.fillPolygon(p);
             Node here = node.getPrev(this);
             for (int hi = 0; hi < members.length(); hi++) {
                 if(here == null || node == null) break;
