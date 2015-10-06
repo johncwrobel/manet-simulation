@@ -190,6 +190,10 @@ public class Node {
         }
     }
 
+    public void paintHubReceived(Graphics g) {
+
+    }
+
     public void doPaint(Graphics g) {
 //        Model.paintText(g, Color.black, toString(), 20, 20 + ID * 20);
         if (Model.doFlow) {
@@ -213,7 +217,6 @@ public class Node {
                                 int rad2 = rad + rad;
                                 g.drawOval(status[ch].cclx - rad, status[ch].ccly - rad, rad2,
                                         rad2);
-
                                 // check for next node
                                 // if this node has the ball
                                 if (ID == Path.getBall()) {
@@ -272,13 +275,13 @@ public class Node {
                 g.setColor(Color.green);
                 break;
             case GO_TO:
-                g.setColor(Color.magenta);
+                //g.setColor(Color.magenta);
                 break;
             case END:
-                g.setColor(Color.red);
+                //g.setColor(Color.red);
                 break;
             case GO_FROM:
-                g.setColor(Color.cyan);
+                //g.setColor(Color.cyan);
                 break;
         }
         if (go) {
@@ -448,6 +451,7 @@ public class Node {
                                         Model.debug.println("Ball arrived at " + receiver.ID
                                                 + " from " + sender.ID);
                                     }
+
                                     Path.firstDraw = false;
                                     net.flowing = false;
                                     //                            Model.node[Model.routeFrom].stopSending(channel);
@@ -482,36 +486,38 @@ public class Node {
                 }
             }
         }
-        if (!collide) {
-            dvx = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
-            dvy = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
+        if (!isMainHub) {
+            if (!collide) {
+                dvx = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
+                dvy = Model.speed * Model.radialSpeed * (Math.random() - 0.5);
+            }
+            if ((px < Model.EDGE) && (dvx < 0)) {
+                dvx = -dvx;
+            }
+            if ((py < Model.EDGE) && (dvy < 0)) {
+                dvy = -dvy;
+            }
+            if ((px > (Model.screenSize.width - Model.EDGE)) && (dvx > 0)) {
+                dvx = -dvx;
+            }
+            if ((py > (Model.screenSize.height - Model.EDGE)) && (dvy > 0)) {
+                dvy = -dvy;
+            }
+            vx += dvx / 10;
+            vy += dvy / 10;
+            double avx = Math.abs(vx);
+            if (avx > Model.MAXV) {
+                vx = Model.MAXV * avx / vx;
+            }
+            double avy = Math.abs(vy);
+            if (avy > Model.MAXV) {
+                vy = Model.MAXV * avy / vy;
+            }
+            fx += vx;
+            fy += vy;
+            px = (int) fx;
+            py = (int) fy;
         }
-        if ((px < Model.EDGE) && (dvx < 0)) {
-            dvx = -dvx;
-        }
-        if ((py < Model.EDGE) && (dvy < 0)) {
-            dvy = -dvy;
-        }
-        if ((px > (Model.screenSize.width - Model.EDGE)) && (dvx > 0)) {
-            dvx = -dvx;
-        }
-        if ((py > (Model.screenSize.height - Model.EDGE)) && (dvy > 0)) {
-            dvy = -dvy;
-        }
-        vx += dvx / 10;
-        vy += dvy / 10;
-        double avx = Math.abs(vx);
-        if (avx > Model.MAXV) {
-            vx = Model.MAXV * avx / vx;
-        }
-        double avy = Math.abs(vy);
-        if (avy > Model.MAXV) {
-            vy = Model.MAXV * avy / vy;
-        }
-        fx += vx;
-        fy += vy;
-        px = (int) fx;
-        py = (int) fy;
     }
 
     public boolean isIn(SubNet net) {

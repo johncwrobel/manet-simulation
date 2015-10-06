@@ -10,6 +10,8 @@
  */
 package System;
 
+import java.util.Random;
+
 import static System.Model.cornerX;
 import static System.Model.cornerY;
 import static System.Model.doDbg;
@@ -82,9 +84,11 @@ public class Path {
             case FIND_ENDS:
                 closest = inPtDistance(0, cornerX, cornerY);
                 furthest = closest;
-                startNode = node[0];
+                Random rn = new Random();
+                int startNodeIndex = rn.nextInt(node.length -1 ) + 1;
+                startNode = node[startNodeIndex];
                 endNode = node[0];
-                for (int i = 0; i < node.length; i++) {
+                /*for (int i = 0; i < node.length; i++) {
                     int d = inPtDistance(i, cornerX, cornerY);
                     if (d < Integer.MAX_VALUE && d > furthest) {
                         furthest = d;
@@ -93,7 +97,7 @@ public class Path {
                         closest = d;
                         startNode = node[i];
                     }
-                }
+                }*/
                 setFlowing(startNode.ID);
                 Node.clearAll(true);
                 startNode.mark(Node.Mode.START);
